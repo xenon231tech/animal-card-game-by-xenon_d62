@@ -1,0 +1,56 @@
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.~*
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Dependency directories (kalo nanti pake package manager)
+node_modules/
+jspm_packages/
+
+# Build outputs
+dist/
+build/
+out/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Vercel
+.vercel/
+
+# Temporary files
+*.tmp
+*.temp
+*.cache
+
+# Backup files
+*.bak
+*.backup
+
+# Screenshots (optional, biar gak ke-commit dua kali)
+# screenshot.png
+
+# Local configuration
+config.local.js
+settings.local.json
