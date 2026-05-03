@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>🐉 ANIMALS CARD | SPIN, TRADE & EARN $ACG</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: radial-gradient(circle at 10% 20%, #0f2e1a, #030a04);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .app {
+            max-width: 580px;
+            margin: 0 auto;
+        }
+        .header {
+            background: linear-gradient(135deg, rgba(0,0,0,0.7), rgba(30,20,10,0.8));
+            backdrop-filter: blur(20px);
+            border-radius: 100px;
+            padding: 12px 20px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            border: 1px solid rgba(255,200,100,0.5);
+        }
+        .points-badge {
+            background: #2c1c12;
+            padding: 8px 20px;
+            border-radius: 50px;
+            color: #FFD966;
+            font-weight: bold;
+        }
+        .nav {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        .nav-btn {
+            background: rgba(20,15,8,0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,200,100,0.4);
+            padding: 10px 18px;
+            border-radius: 50px;
+            color: #f5e2b0;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .nav-btn.active {
+            background: linear-gradient(135deg, #ffb347, #ff9100);
+            color: #1e1a0c;
+            border-color: #ffdfa0;
+            box-shadow: 0 0 12px #ffb347;
+        }
+        .glass-panel {
+            background: rgba(10,15,7,0.75);
+            backdrop-filter: blur(20px);
+            border-radius: 48px;
+            padding: 24px 20px;
+            border: 1px solid rgba(255,200,100,0.4);
+        }
+        .wheel-area {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        canvas {
+            background: radial-gradient(circle at 30% 35%, #ffefcf, #ecdcaa);
+            border-radius: 50%;
+            box-shadow: 0 0 0 6px #ffdd99, 0 0 0 12px #b87333;
+            width: 100%;
+            height: auto;
+        }
+        .spin-btn {
+            position: absolute;
+            bottom: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(145deg, #f5b042, #e07e1a);
+            border: none;
+            font-weight: 800;
+            padding: 10px 32px;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 8px 0 #984d0c;
+            color: white;
+            text-shadow: 1px 1px 0 rgba(0,0,0,0.3);
+        }
+        .daily-info {
+            text-align: center;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: rgba(0,0,0,0.5);
+            border-radius: 30px;
+            color: #ffdd99;
+        }
+        .card-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .card {
+            background: linear-gradient(145deg, #3f2e1c, #241a0f);
+            border-radius: 24px;
+            padding: 12px 6px;
+            text-align: center;
+            width: 100px;
+            border: 1px solid rgba(255,180,70,0.5);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .card:hover {
+            transform: translateY(-3px);
+            border-color: #ffb347;
+        }
+        .card-icon { font-size: 2rem; }
+        .rarity-badge {
+            font-size: 0.6rem;
+            padding: 4px 8px;
+            border-radius: 30px;
+            display: inline-block;
+            margin: 8px 0;
+            font-weight: bold;
+            color: white;
+        }
+        .Common { background: #6b6b6b; color: white; }
+        .Rare { background: #2a7a8a; color: white; }
+        .Epic { background: #9b4e9b; color: white; }
+        .Legendary { background: #e6b422; color: #1f1906; }
+        .shop-item, .listing-item {
+            background: rgba(0,0,0,0.5);
+            border-radius: 30px;
+            padding: 15px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            color: white;
+        }
+        .buy-btn {
+            background: #ffb347;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #1e1a0c;
+        }
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 5px;
+            border-bottom: 1px solid rgba(255,200,100,0.3);
+            color: #f0e6c5;
+        }
+        .airdrop-card {
+            background: linear-gradient(135deg, #2a5a2a, #1a3a1a);
+            border-radius: 30px;
+            padding: 20px;
+            margin-top: 15px;
+            text-align: center;
+            border: 1px solid #FFD966;
+        }
+        button.small {
+            background: #ffb347;
+            border: none;
+            padding: 4px 12px;
+            border-radius: 30px;
+            cursor: pointer;
+            color: #1e1a0c;
+            font-weight: bold;
+        }
+        h2, h3 { text-align: center; margin-bottom: 20px; color: #FFD966; }
+        hr { margin: 15px 0; border-color: rgba(255,200,100,0.3); }
+        .card div { color: #f0e6c5; }
+        .card .card-icon { color: white; }
+        .progress-bar {
+            background: #2c1c12;
+            border-radius: 20px;
+            height: 20px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        .progress-fill {
+            background: linear-gradient(90deg, #ffb347, #ff9100);
+            height: 100%;
+            border-radius: 20px;
+            transition: width 0.5s;
+        }
+    </style>
+</head>
+<body>
+<div class="app" id="app"></div>
+
+<script>
+    // ==================== DATA KARTU ====================
+    const ANIMALS = [
+        { id: 0, name: "🐜 ANT", rarity: "Common", points: 10, icon: "🐜", basePrice: 5 },
+        { id: 1, name: "🐭 MOUSE", rarity: "Common", points: 10, icon: "🐭", basePrice: 5 },
+        { id: 2, name: "🐱 CAT", rarity: "Rare", points: 50, icon: "🐱", basePrice: 25 },
+        { id: 3, name: "🐕 DOG", rarity: "Rare", points: 55, icon: "🐕", basePrice: 28 },
+        { id: 4, name: "🦅 EAGLE", rarity: "Epic", points: 200, icon: "🦅", basePrice: 100 },
+        { id: 5, name: "🐉 DRAGON", rarity: "Legendary", points: 1000, icon: "🐉", basePrice: 500 },
+        { id: 6, name: "🐺 WOLF", rarity: "Epic", points: 180, icon: "🐺", basePrice: 90 }
+    ];
+    const COLORS = ["#FADB67","#F5CD86","#F0BA6C","#F1C282","#F6D596","#EBB45E","#E5A443"];
+    
+    // ==================== STATE GAME ====================
+    let userPoints = 0;
+    let userSpins = 5;
+    let lastDailyClaim = 0;
+    let userCards = {};
+    let playerName = "Collector";
+    let currentTab = "game";
+    
+    // Marketplace
+    let marketplaceListings = [];
+    let marketShowBuy = true;
+    
+    // Airdrop
+    let airdropClaimed = false;
+    let lastAirdropCheck = 0;
+    
+    let spinning = false;
+    let wheelAngle = 0;
+    let canvas, ctx;
+    
+    // ==================== LOAD/SAVE ====================
+    function loadData() {
+        let p = localStorage.getItem("ac_points");
+        userPoints = p ? parseInt(p) : 0;
+        let s = localStorage.getItem("ac_spins");
+        userSpins = s ? parseInt(s) : 5;
+        let d = localStorage.getItem("ac_daily");
+        lastDailyClaim = d ? parseInt(d) : 0;
+        let c = localStorage.getItem("ac_cards");
+        userCards = c ? JSON.parse(c) : {};
+        let n = localStorage.getItem("ac_name");
+        if(n) playerName = n;
+        let m = localStorage.getItem("ac_market");
+        marketplaceListings = m ? JSON.parse(m) : [];
+        let a = localStorage.getItem("ac_airdrop");
+        if(a) airdropClaimed = JSON.parse(a);
+    }
+    
+    function saveData() {
+        localStorage.setItem("ac_points", userPoints);
+        localStorage.setItem("ac_spins", userSpins);
+        localStorage.setItem("ac_daily", lastDailyClaim);
+        localStorage.setItem("ac_cards", JSON.stringify(userCards));
+        localStorage.setItem("ac_name", playerName);
+        localStorage.setItem("ac_market", JSON.stringify(marketplaceListings));
+        localStorage.setItem("ac_airdrop", JSON.stringify(airdropClaimed));
+    }
+    
+    // ==================== DAILY SPIN ====================
+    function claimDailySpin() {
+        const now = Date.now();
+        const oneDay = 24 * 60 * 60 * 1000;
+        if (now - lastDailyClaim >= oneDay) {
+            userSpins += 3;
+            lastDailyClaim = now;
+            saveData();
+            render();
+            alert("🎁 Daily bonus claimed! +3 Free Spins!");
+        } else {
+            const hoursLeft = Math.ceil((oneDay - (now - lastDailyClaim)) / (60 * 60 * 1000));
+            alert(`⏰ Next daily spin in ${hoursLeft} hours!`);
+        }
+    }
+    
+    // ==================== SPIN LOGIC ====================
+    function getRandomCard() {
+        let rand = Math.random() * 100;
+        if (rand < 60) return ANIMALS.filter(a => a.rarity === "Common")[Math.floor(Math.random() * 2)];
+        if (rand < 85) return ANIMALS.filter(a => a.rarity === "Rare")[Math.floor(Math.random() * 2)];
+        if (rand < 97) return ANIMALS.filter(a => a.rarity === "Epic")[Math.floor(Math.random() * 2)];
+        return ANIMALS.find(a => a.rarity === "Legendary");
+    }
+    
+    function addCard(cardId, qty = 1) {
+        userCards[cardId] = (userCards[cardId] || 0) + qty;
+        saveData();
+    }
+    
+    function removeCard(cardId, qty = 1) {
+        if (!userCards[cardId] || userCards[cardId] < qty) return false;
+        userCards[cardId] -= qty;
+        if (userCards[cardId] === 0) delete userCards[cardId];
+        saveData();
+        return true;
+    }
+    
+    async function doSpin() {
+        if (spinning) return;
+        if (userSpins <= 0) {
+            alert("❌ No spins left! Get daily bonus or buy spins in SHOP!");
+            return;
+        }
+        
+        userSpins--;
+        saveData();
+        spinning = true;
+        render();
+        
+        let speed = 25 + Math.random() * 18;
+        let dec = 0.97;
+        
+        function animate() {
+            speed *= dec;
+            wheelAngle += speed * 0.045;
+            drawWheel();
+            if (speed > 0.35) {
+                requestAnimationFrame(animate);
+            } else {
+                let card = getRandomCard();
+                addCard(card.id, 1);
+                userPoints += card.points;
+                saveData();
+                spinning = false;
+                render();
+                alert(`✨🎉 GOT ${card.name} (${card.rarity})! +${card.points} points! 🎉✨`);
+            }
+        }
+        requestAnimationFrame(animate);
+    }
+    
+    function drawWheel() {
+        if (!canvas) return;
+        let w = canvas.width, h = canvas.height;
+        let cx = w/2, cy = h/2, r = w * 0.42;
+        ctx.clearRect(0, 0, w, h);
+        let start = wheelAngle;
+        let step = (Math.PI * 2) / ANIMALS.length;
+        for (let i = 0; i < ANIMALS.length; i++) {
+            let end = start + step;
+            ctx.beginPath();
+            ctx.moveTo(cx, cy);
+            ctx.arc(cx, cy, r, start, end);
+            ctx.fillStyle = COLORS[i % COLORS.length];
+            ctx.fill();
+            ctx.strokeStyle = "#a05a2c";
+            ctx.stroke();
+            ctx.fillStyle = "#281e10";
+            ctx.font = `bold ${Math.max(18, r * 0.14)}px "Segoe UI"`;
+            let mid = start + step/2;
+            let x = cx + Math.cos(mid) * r * 0.68;
+            let y = cy + Math.sin(mid) * r * 0.68;
+            ctx.fillText(ANIMALS[i].icon, x-8, y+6);
+            start = end;
+        }
+        ctx.fillStyle = "#E25822";
+        ctx.beginPath();
+        ctx.moveTo(cx-12, cy-r-10);
+        ctx.lineTo(cx, cy-r-28);
+        ctx.lineTo(cx+12, cy-r-10);
+        ctx.fill();
+    }
+    
+    // ==================== MARKETPLACE ====================
+    function listCard(cardId, priceETH) {
+        let card = ANIMALS.find(c => c.id === cardId);
+        if (!card) return;
+        if (!userCards[cardId] || userCards[cardId] < 1) {
+            alert("You don't own this card!");
+            return;
+        }
+        
+        let p = parseFloat(priceETH);
+        if (isNaN(p) || p <= 0) {
+            alert("Invalid price!");
+            return;
+        }
+        
+        marketplaceListings.push({
+            id: Date.now(),
+            cardId: cardId,
+            cardName: card.name,
+            cardIcon: card.icon,
+            rarity: card.rarity,
+            priceETH: p,
+            seller: playerName,
+            timestamp: new Date().toISOString()
+        });
+        
+        removeCard(cardId, 1);
+        saveData();
+        render();
+        alert(`${card.name} listed for ${p} ETH!`);
+    }
+    
+    function buyListing(listingId) {
+        let listing = marketplaceListings.find(l => l.id === listingId);
+        if (!listing) {
+            alert("Listing not found!");
+            return;
+        }
+        
+        // Simulasi pembelian (nanti integrasi payment)
+        if (confirm(`Buy ${listing.cardName} for ${listing.priceETH} ETH?\n\n💳 Payment: ETH / USDC\n📮 Developer wallet: 0xA79b2318...80c81\n\n5% fee goes to developer.`)) {
+            alert(`✅ Purchase request for ${listing.cardName}!\n\nPlease send ${listing.priceETH} ETH to:\n0xA79b23182e191fDFb5049FFFb5BEE54830980c81\n\nCard will be added after confirmation.`);
+            
+            if (prompt("DEMO MODE: Type 'DEMO' to complete purchase", "") === "DEMO") {
+                addCard(listing.cardId, 1);
+                marketplaceListings = marketplaceListings.filter(l => l.id !== listingId);
+                saveData();
+                render();
+                alert(`✅ Demo: ${listing.cardName} added to your collection!`);
+            }
+        }
+    }
+    
+    function cancelListing(listingId) {
+        let listing = marketplaceListings.find(l => l.id === listingId);
+        if (listing && listing.seller === playerName) {
+            addCard(listing.cardId, 1);
+            marketplaceListings = marketplaceListings.filter(l => l.id !== listingId);
+            saveData();
+            render();
+            alert("Listing cancelled, card returned to your collection.");
+        }
+    }
+    
+    // ==================== SHOP ====================
+    function buySpins(spins, priceUSD) {
+        if (confirm(`💰 Buy ${spins} Spins for $${priceUSD}?\n\n💳 Payment: USDC (Multi-chain)\n📮 Developer wallet: 0xA79b2318...80c81`)) {
+            alert(`✅ Order received for ${spins} spins!\n\nPlease send $${priceUSD} USDC to:\n0xA79b23182e191fDFb5049FFFb5BEE54830980c81\n\nSpins will be added after confirmation.`);
+            
+            if (prompt("DEMO MODE: Type 'DEMO' to add spins instantly", "") === "DEMO") {
+                userSpins += spins;
+                saveData();
+                render();
+                alert(`✅ Demo: +${spins} spins added!`);
+            }
+        }
+    }
+    
+    // ==================== AIRDROP ====================
+    function getAirdropEstimate() {
+        let totalCards = Object.values(userCards).reduce((a,b) => a+b, 0);
+        let uniqueCards = Object.keys(userCards).length;
+        let rarityBonus = 0;
+        for (let [id, qty] of Object.entries(userCards)) {
+            let card = ANIMALS.find(c => c.id == id);
+            if (card) {
+                if (card.rarity === "Legendary") rarityBonus += qty * 100;
+                else if (card.rarity === "Epic") rarityBonus += qty * 20;
+                else if (card.rarity === "Rare") rarityBonus += qty * 5;
+                else rarityBonus += qty * 1;
+            }
+        }
+        let baseEstimate = (userPoints * 0.1) + (totalCards * 5) + (uniqueCards * 10) + rarityBonus;
+        return Math.floor(baseEstimate);
+    }
+    
+    function claimAirdrop() {
+        if (airdropClaimed) {
+            alert("❌ You've already claimed your $ACG airdrop!");
+            return;
+        }
+        
+        let estimate = getAirdropEstimate();
+        if (estimate < 100) {
+            alert(`📊 Airdrop not available yet!\n\nYou need at least 100 $ACG points.\nCurrent estimate: ${estimate} $ACG\n\nKeep spinning and collecting cards!`);
+            return;
+        }
+        
+        if (confirm(`🎁 CLAIM AIRDROP!\n\nYou will receive approximately ${estimate} $ACG tokens.\n\nThis will be sent to your wallet after TGE.\n\nContinue?`)) {
+            airdropClaimed = true;
+            saveData();
+            alert(`✅ Airdrop recorded!\n\nYou'll receive ${estimate} $ACG tokens at Token Generation Event.\n\nFollow @AnimalsCardGame for updates!`);
+            render();
+        }
+    }
+    
+    // ==================== STATISTIK ====================
+    function getTotalValue() {
+        let total = 0;
+        for (let [id, qty] of Object.entries(userCards)) {
+            let card = ANIMALS.find(c => c.id == id);
+            if (card) total += card.basePrice * qty;
+        }
+        return total;
+    }
+    
+    function getRarityBreakdown() {
+        let breakdown = { Common: 0, Rare: 0, Epic: 0, Legendary: 0 };
+        for (let [id, qty] of Object.entries(userCards)) {
+            let card = ANIMALS.find(c => c.id == id);
+            if (card) breakdown[card.rarity] += qty;
+        }
+        return breakdown;
+    }
+    
+    // ==================== RENDER UI ====================
+    function render() {
+        let app = document.getElementById("app");
+        if (!app) return;
+        
+        let totalCards = Object.values(userCards).reduce((a,b) => a+b, 0);
+        let uniqueCards = Object.keys(userCards).length;
+        let totalValue = getTotalValue();
+        let rarityBreakdown = getRarityBreakdown();
+        let airdropEstimate = getAirdropEstimate();
+        let progressPercent = Math.round(uniqueCards / ANIMALS.length * 100);
+        
+        let html = `
+            <div class="header">
+                <div style="color:#FFD966;">✨ ${playerName}</div>
+                <div class="points-badge">⭐ ${userPoints} pts | 🎡 ${userSpins} spins</div>
+            </div>
+            
+            <div class="nav">
+                <button class="nav-btn ${currentTab === 'game' ? 'active' : ''}" onclick="setTab('game')">🎡 GAME</button>
+                <button class="nav-btn ${currentTab === 'collection' ? 'active' : ''}" onclick="setTab('collection')">📦 COLLECTION</button>
+                <button class="nav-btn ${currentTab === 'market' ? 'active' : ''}" onclick="setTab('market')">🛒 MARKET</button>
+                <button class="nav-btn ${currentTab === 'shop' ? 'active' : ''}" onclick="setTab('shop')">💰 SHOP</button>
+                <button class="nav-btn ${currentTab === 'stats' ? 'active' : ''}" onclick="setTab('stats')">📊 STATS</button>
+                <button class="nav-btn ${currentTab === 'airdrop' ? 'active' : ''}" onclick="setTab('airdrop')">🎁 $ACG</button>
+            </div>
+        `;
+        
+        if (currentTab === 'game') {
+            html += `
+                <div class="glass-panel">
+                    <div class="daily-info">
+                        🎁 Daily Free Spin: <b
