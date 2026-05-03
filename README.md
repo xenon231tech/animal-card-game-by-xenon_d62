@@ -1,3 +1,8 @@
+[![Vercel](https://img.shields.io/badge/deployed-vercel-000?logo=vercel)](https://animal-card-game-by-xenon.vercel.app)
+[![License](https://img.shields.io/badge/license-custom-red)](LICENSE.md)
+[![GitHub stars](https://img.shields.io/github/stars/xenon231tech/animal-card-game-by-xenon)](https://github.com/xenon231tech/animal-card-game-by-xenon/stargazers)
+[![Twitter](https://img.shields.io/badge/twitter-@xenon_d62-1DA1F2?logo=twitter)](https://x.com/xenon_d62)
+
 # Animal Card Collection
 
 Spin wheel game untuk mengoleksi kartu hewan. Dapatkan kartu langka, kumpulkan poin, dan bersaing di leaderboard.
