@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>🐉 ANIMALS CARD | Web3 Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: radial-gradient(ellipse at 20% 30%, #0a1f0e, #030703);
+            min-height: 100vh;
+            color: #fff;
+        }
+
+        /* LOADING SCREEN */
+        .loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #030703;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: opacity 0.5s;
+        }
+
+        .loader {
+            width: 50px;
+            height: 50px;
+            border: 3px solid #ffb347;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* LOGIN PAGE */
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .login-card {
+            background: rgba(20, 25, 18, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 48px;
+            padding: 40px 30px;
+            max-width: 450px;
+            width: 100%;
+            border: 1px solid rgba(255, 200, 100, 0.3);
+            box-shadow: 0 25px 45px rgba(0,0,0,0.5);
+        }
+
+        .login-card h1 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #FFD966, #FF8C00);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .login-card p {
+            text-align: center;
+            color: #aaa;
+            margin-bottom: 30px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #FFD966;
+            font-weight: 600;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 14px 18px;
+            background: rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,200,100,0.3);
+            border-radius: 30px;
+            color: white;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .input-group input:focus {
+            border-color: #ffb347;
+            box-shadow: 0 0 10px rgba(255,180,70,0.3);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #ffb347, #ff8c00);
+            border: none;
+            border-radius: 40px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: transform 0.2s;
+        }
+
+        .login-btn:active {
+            transform: scale(0.98);
+        }
+
+        .error-msg {
+            color: #ff6b6b;
+            text-align: center;
+            margin-top: 15px;
+            font-size: 0.9rem;
+        }
+
+        /* MAIN APP */
+        .app {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* HEADER */
+        .header {
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(20px);
+            border-radius: 60px;
+            padding: 12px 20px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            border: 1px solid rgba(255,200,100,0.3);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .avatar {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #ffb347, #ff8c00);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .user-details h3 {
+            font-size: 1rem;
+            margin-bottom: 3px;
+        }
+
+        .user-details p {
+            font-size: 0.7rem;
+            color: #FFD966;
+        }
+
+        .stats-header {
+            text-align: right;
+        }
+
+        .stats-header .points {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #FFD966;
+        }
+
+        .stats-header .spins {
+            font-size: 0.8rem;
+            color: #ccc;
+        }
+
+        /* NAVIGATION */
+        .nav {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .nav-btn {
+            background: rgba(20,25,18,0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,200,100,0.3);
+            padding: 12px 18px;
+            border-radius: 50px;
+            color: #e0d6b0;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.85rem;
+        }
+
+        .nav-btn.active {
+            background: linear-gradient(135deg, #ffb347, #ff8c00);
+            color: #1a1a0a;
+            border-color: #FFD966;
+            box-shadow: 0 0 15px rgba(255,180,70,0.4);
+        }
+
+        /* PANEL UMUM */
+        .panel {
+            background: rgba(10, 15, 7, 0.8);
+            backdrop-filter: blur(20px);
+            border-radius: 40px;
+            padding: 24px 20px;
+            border: 1px solid rgba(255,200,100,0.3);
+        }
+
+        /* SPIN WHEEL */
+        .wheel-container {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        canvas {
+            background: radial-gradient(circle at 30% 35%, #ffefcf, #ecdcaa);
+            border-radius: 50%;
+            box-shadow: 0 0 0 6px #ffdd99, 0 0 0 12px #b87333, 0 20px 35px black;
+            width: 100%;
+            height: auto;
+        }
+
+        .spin-btn {
+            position: absolute;
+            bottom: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(145deg, #f5b042, #e07e1a);
+            border: none;
+            font-weight: 800;
+            font-size: 1.1rem;
+            padding: 10px 30px;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 6px 0 #984d0c;
+            color: white;
+            text-shadow: 1px 1px 0 rgba(0,0,0,0.3);
+            transition: 0.05s linear;
+        }
+
+        .spin-btn:active {
+            transform: translateX(-50%) translateY(4px);
+            box-shadow: 0 2px 0 #984d0c;
+        }
+
+        /* CARD GRID */
+        .card-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 20px;
+            max-height: 380px;
+            overflow-y: auto;
+        }
+
+        .card {
+            background: linear-gradient(145deg, #3f2e1c, #241a0f);
+            border-radius: 24px;
+            padding: 12px 8px;
+            text-align: center;
+            width: 100px;
+            border: 1px solid rgba(255,180,70,0.4);
+            transition: all 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: #ffb347;
+        }
+
+        .card-icon {
+            font-size: 2rem;
+        }
+
+        .rarity-badge {
+            font-size: 0.6rem;
+            padding: 4px 8px;
+            border-radius: 30px;
+            display: inline-block;
+            margin: 8px 0;
+            font-weight: bold;
+        }
+
+        .Common { background: #6b6b6b; color: white; }
+        .Rare { background: #2a7a8a; color: white; }
+        .Epic { background: #9b4e9b; color: white; }
+        .Legendary { background: #e6b422; color: #1f1906; }
+
+        .card-points {
+            font-size: 0.7rem;
+            color: #FFD966;
+        }
+
+        /* DAILY REWARD */
+        .daily-grid {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .daily-item {
+            flex: 1;
+            background: rgba(0,0,0,0.5);
+            border-radius: 25px;
+            padding: 15px 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid rgba(255,200,100,0.3);
+        }
+
+        .daily-item.claimed {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .daily-item.today {
+            border-color: #ffb347;
+            box-shadow: 0 0 15px rgba(255,180,70,0.3);
+        }
+
+        .daily-day {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #FFD966;
+        }
+
+        .daily-reward {
+            font-size: 0.8rem;
+            margin: 8px 0;
+        }
+
+        /* SHOP ITEMS */
+        .shop-item {
+            background: rgba(0,0,0,0.5);
+            border-radius: 30px;
+            padding: 15px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .buy-btn {
+            background: linear-gradient(135deg, #ffb347, #ff8c00);
+            border: none;
+            padding: 8px 20px;
+            border-radius: 40px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* STATS */
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 8px;
+            border-bottom: 1px solid rgba(255,200,100,0.2);
+        }
+
+        .progress-bar {
+            background: #2c1c12;
+            border-radius: 20px;
+            height: 20px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #ffb347, #ff8c00);
+            height: 100%;
+            border-radius: 20px;
+            transition: width 0.5s;
+        }
+
+        button.small {
+            background: #ffb347;
+            border: none;
+            padding: 4px 12px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #FFD966;
+        }
+
+        hr {
+            margin: 15px 0;
+            border-color: rgba(255,200,100,0.2);
+        }
+
+        /* LOGOUT BTN */
+        .logout-btn {
+            background: rgba(138, 58, 58, 0.8);
+            border: none;
+            padding: 6px 14px;
+            border-radius: 30px;
+            color: white;
+            cursor: pointer;
+            font-size: 0.75rem;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<!-- LOADING -->
+<div class="loading" id="loading">
+    <div class="loader"></div>
+</div>
+
+<!-- LOGIN PAGE -->
+<div id="loginPage">
+    <div class="login-container">
+        <div class="login-card">
+            <h1>🐉 ANIMALS CARD</h1>
+            <p>Enter the Arena • Collect • Earn</p>
+            <div class="input-group">
+                <label>🎮 Username</label>
+                <input type="text" id="loginUsername" placeholder="Enter your username">
+            </div>
+            <div class="input-group">
+                <label>🔗 EVM Wallet Address</label>
+                <input type="text" id="loginWallet" placeholder="0x...">
+            </div>
+            <button class="login-btn" onclick="registerOrLogin()">🚀 START GAME</button>
+            <div id="loginError" class="error-msg"></div>
+        </div>
+    </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="mainApp" class="hidden">
+    <div class="app">
+        <!-- HEADER -->
+        <div class="header">
+            <div class="user-info">
+                <div class="avatar" id="avatarEmoji">🐜</div>
+                <div class="user-details">
+                    <h3 id="displayName">Player</h3>
+                    <p id="displayWallet">0x...</p>
+                </div>
+            </div>
+            <div class="stats-header">
+                <div class="points" id="headerPoints">⭐ 0</div>
+                <div class="spins" id="headerSpins">🎡 0 spins</div>
+            </div>
+            <button class="logout-btn" onclick="logout()">🚪 Exit</button>
+        </div>
+
+        <!-- NAVIGATION -->
+        <div class="nav">
+            <button class="nav-btn" data-tab="game">🎡 SPIN</button>
+            <button class="nav-btn" data-tab="daily">🎁 DAILY</button>
+            <button class="nav-btn" data-tab="collection">📦 COLLECTION</button>
+            <button class="nav-btn" data-tab="shop">💰 SHOP</button>
+            <button class="nav-btn" data-tab="stats">📊 STATS</button>
+            <button class="nav-btn" data-tab="profile">👤 PROFILE</button>
+        </div>
+
+        <!-- TAB CONTENT -->
+        <div id="tabGame" class="tab-content">
+            <div class="panel">
+                <div class="wheel-container">
+                    <canvas id="wheelCanvas" width="280" height="280"></canvas>
+                    <button class="spin-btn" onclick="doSpin()">🌀 SPIN!</button>
+                </div>
+                <div class="card-grid" id="recentCardGrid"></div>
+            </div>
+        </div>
+
+        <div id="tabDaily" class="tab-content hidden">
+            <div class="panel">
+                <h2>🎁 DAILY REWARDS</h2>
+                <div id="dailyGrid" class="daily-grid"></div>
+            </div>
+        </div>
+
+        <div id="tabCollection" class="tab-content hidden">
+            <div class="panel">
+                <h2>📦 MY COLLECTION</h2>
+                <div class="card-grid" id="collectionGrid"></div>
+            </div>
+        </div>
+
+        <div id="tabShop" class="tab-content hidden">
+            <div class="panel">
+                <h2>💰 SPIN SHOP</h2>
+                <div id="shopGrid"></div>
+                <hr>
+                <p style="font-size: 10px; text-align: center; color: #aaa;">
+                    💳 Send USDC to:<br>
+                    <strong style="color:#FFD966;">0xA79b23182e191fDFb5049FFFb5BEE54830980c81</strong>
+                </p>
+            </div>
+        </div>
+
+        <div id="tabStats" class="tab-content hidden">
+            <div class="panel">
+                <h2>📊 COLLECTOR STATS</h2>
+                <div id="statsContent"></div>
+            </div>
+        </div>
+
+        <div id="tabProfile" class="tab-content hidden">
+            <div class="panel">
+                <h2>👤 PROFILE</h2>
+                <div class="stat-row"><span>🎮 Username</span><span id="profileName"></span></div>
+                <div class="stat-row"><span>🔗 Wallet</span><span id="profileWallet"></span></div>
+                <div class="stat-row"><span>⭐ Total Points</span><span id="profilePoints"></span></div>
+                <div class="stat-row"><span>🎡 Total Spins Used</span><span id="profileSpinsUsed"></span></div>
+                <button class="buy-btn" onclick="resetGameData()" style="margin-top:20px; width:100%; background:#8a3a3a;">🔄 RESET GAME</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ==================== DATA GAME ====================
+    const ANIMALS = [
+        { id: 0, name: "🐜 ANT", rarity: "Common", points: 10, icon: "🐜" },
+        { id: 1, name: "🐭 MOUSE", rarity: "Common", points: 10, icon: "🐭" },
+        { id: 2, name: "🐱 CAT", rarity: "Rare", points: 50, icon: "🐱" },
+        { id: 3, name: "🐕 DOG", rarity: "Rare", points: 55, icon: "🐕" },
+        { id: 4, name: "🦅 EAGLE", rarity: "Epic", points: 200, icon: "🦅" },
+        { id: 5, name: "🐉 DRAGON", rarity: "Legendary", points: 1000, icon: "🐉" },
+        { id: 6, name: "🐺 WOLF", rarity: "Epic", points: 180, icon: "🐺" }
+    ];
+    const COLORS = ["#FADB67","#F5CD86","#F0BA6C","#F1C282","#F6D596","#EBB45E","#E5A443"];
+    
+    const DAILY_REWARDS = [
+        { day: 1, spins: 3, desc: "3 Free Spins" },
+        { day: 2, spins: 5, desc: "5 Free Spins" },
+        { day: 3, spins: 8, desc: "8 Free Spins" },
+        { day: 4, spins: 10, desc: "10 Free Spins" },
+        { day: 5, spins: 15, desc: "15 Free Spins" },
+        { day: 6, spins: 20, desc: "20 Free Spins" },
+        { day: 7, spins: 30, desc: "30 Free Spins" }
+    ];
+    
+    // USER DATA
+    let currentUser = null;
+    let users = {};
+    
+    // SPIN STATE
+    let spinning = false;
+    let wheelAngle = 0;
+    let canvas, ctx;
+    
+    // ==================== AUTH ====================
+    function loadUsers() {
+        let saved = localStorage.getItem("ac_users");
+        if(saved) users = JSON.parse(saved);
+        else users = {};
+    }
+    
+    function saveUsers() {
+        localStorage.setItem("ac_users", JSON.stringify(users));
+    }
+    
+    function registerOrLogin() {
+        let username = document.getElementById("loginUsername").value.trim();
+        let wallet = document.getElementById("loginWallet").value.trim();
+        
+        if(!username) {
+            document.getElementById("loginError").innerText = "❌ Username required!";
+            return;
+        }
+        if(!wallet || !wallet.startsWith("0x")) {
+            document.getElementById("loginError").innerText = "❌ Valid EVM wallet address required! (0x...)";
+            return;
+        }
+        
+        if(users[username]) {
+            if(users[username].wallet.toLowerCase() !== wallet.toLowerCase()) {
+                document.getElementById("loginError").innerText = "❌ Wrong wallet for this username!";
+                return;
+            }
+        } else {
+            // New user
+            users[username] = {
+                wallet: wallet,
+                points: 0,
+                spins: 5,
+                cards: {},
+                dailyClaimed: {},
+                lastDailyReset: Date.now(),
+                createdAt: Date.now()
+            };
+            saveUsers();
+        }
+        
+        currentUser = username;
+        localStorage.setItem("ac_currentUser", username);
+        
+        document.getElementById("loginPage").style.display = "none";
+        document.getElementById("mainApp").classList.remove("hidden");
+        document.getElementById("loading").style.display = "none";
+        
+        loadUserData();
+        renderUI();
+        setActiveTab("game");
+    }
+    
+    function loadUserData() {
+        if(!currentUser) return;
+        let user = users[currentUser];
+        
+        // Daily reset check
+        let today = new Date().toDateString();
+        if(user.lastDailyReset !== today) {
+            user.dailyClaimed = {};
+            user.lastDailyReset = today;
+            saveUsers();
+        }
+    }
+    
+    function saveUserData() {
+        saveUsers();
+    }
+    
+    function logout() {
+        currentUser = null;
+        localStorage.removeItem("ac_currentUser");
+        document.getElementById("loginPage").style.display = "block";
+        document.getElementById("mainApp").classList.add("hidden");
+        document.getElementById("loginUsername").value = "";
+        document.getElementById("loginWallet").value = "";
+        document.getElementById("loginError").innerText = "";
+    }
+    
+    // ==================== GAME FUNCTIONS ====================
+    function getRandomCard() {
+        let rand = Math.random(
