@@ -1,0 +1,20 @@
+{
+  "name": "animal-card-collection",
+  "version": "1.0.0",
+  "description": "Spin wheel game - collect animal cards, earn points, compete on leaderboard",
+  "main": "index.html",
+  "author": "xenon_d62",
+  "license": "MIT",
+  "homepage": "https://animal-card-game-by-xenon.vercel.app",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/xenon_d62/animal-card-game-by-xenon.git"
+  },
+  "keywords": [
+    "game",
+    "card-game",
+    "spin-wheel",
+    "web3",
+    "farcaster"
+  ]
+}
