@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>✨ ANIMALS WORLD | SPIN & COLLECT ✨</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: radial-gradient(circle at 10% 20%, #0f2e1a, #030a04);
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+        }
+
+        /* BINTANG BACKGROUND ✨ */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: radial-gradient(2px 2px at 20px 30px, #fff, rgba(0,0,0,0)),
+                              radial-gradient(1px 1px at 80px 200px, #ffdd99, rgba(0,0,0,0));
+            background-size: 200px 200px, 150px 150px;
+            background-repeat: repeat;
+            opacity: 0.3;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .app {
+            max-width: 580px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* HEADER ELEGAN */
+        .header {
+            background: linear-gradient(135deg, rgba(0,0,0,0.7), rgba(30,20,10,0.8));
+            backdrop-filter: blur(20px);
+            border-radius: 100px;
+            padding: 12px 20px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid rgba(255, 200, 100, 0.5);
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.5);
+        }
+
+        .player-glow {
+            font-weight: 800;
+            background: linear-gradient(135deg, #FFE6B0, #FFB347);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 8px rgba(255,180,70,0.3);
+            font-size: 1.1rem;
+        }
+
+        .points-pill {
+            background: linear-gradient(135deg, #2a2418, #1a140c);
+            padding: 8px 24px;
+            border-radius: 60px;
+            font-weight: 800;
+            font-size: 1.4rem;
+            color: #FFD966;
+            box-shadow: inset 0 0 6px rgba(255,200,0,0.3), 0 6px 12px rgba(0,0,0,0.3);
+            letter-spacing: 0.5px;
+        }
+
+        .points-pill small {
+            font-size: 0.7rem;
+            color: #c0a06b;
+        }
+
+        /* NAV MODERN */
+        .nav {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 28px;
+        }
+
+        .nav-btn {
+            background: rgba(20, 15, 8, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 200, 100, 0.4);
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #f5e2b0;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+
+        .nav-btn.active {
+            background: linear-gradient(135deg, #ffb347, #ff9100);
+            color: #1e1a0c;
+            border-color: #ffdfa0;
+            box-shadow: 0 0 12px #ffb347, 0 4px 8px black;
+            text-shadow: none;
+        }
+
+        /* PANEL KACA */
+        .glass-panel {
+            background: rgba(10, 15, 7, 0.65);
+            backdrop-filter: blur(20px);
+            border-radius: 48px;
+            padding: 24px 20px;
+            border: 1px solid rgba(255, 200, 100, 0.4);
+            box-shadow: 0 20px 35px -8px black;
+        }
+
+        /* SPIN WHEEL */
+        .wheel-area {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        canvas {
+            background: radial-gradient(circle at 30% 35%, #ffefcf, #ecdcaa);
+            border-radius: 50%;
+            box-shadow: 0 0 0 6px #ffdd99, 0 0 0 12px #b87333, 0 25px 35px black;
+            transition: all 0.2s;
+            width: 100%;
+            height: auto;
+        }
+
+        .spin-button {
+            position: absolute;
+            bottom: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(145deg, #f5b042, #e07e1a);
+            border: none;
+            font-weight: 800;
+            font-size: 1.2rem;
+            padding: 10px 32px;
+            border-radius: 50px;
+            color: #241d0c;
+            cursor: pointer;
+            box-shadow: 0 8px 0 #984d0c;
+            transition: 0.07s linear;
+            font-family: inherit;
+            letter-spacing: 1px;
+        }
+
+        .spin-button:active {
+            transform: translateX(-50%) translateY(4px);
+            box-shadow: 0 3px 0 #984d0c;
+        }
+
+        /* CARD GRID KEREN */
+        .card-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            justify-content: center;
+            margin-top: 28px;
+            max-height: 400px;
+            overflow-y: auto;
+            padding: 6px;
+        }
+
+        .card {
+            background: linear-gradient(145deg, #3f2e1c, #241a0f);
+            border-radius: 28px;
+            padding: 14px 6px;
+            text-align: center;
+            width: 106px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: 1px solid rgba(255, 180, 70, 0.5);
+            box-shadow: 0 10px 15px -5px black;
+        }
+
+        .card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 18px 25px -8px black;
+            border-color: #ffb347;
+        }
+
+        .card-icon {
+            font-size: 2.2rem;
+        }
+
+        .rarity-badge {
+            font-size: 0.6rem;
+            padding: 4px 8px;
+            border-radius: 30px;
+            display: inline-block;
+            margin: 8px 0;
+            font-weight: 800;
+        }
+
+        .Common {
+            background: #6b6b6b;
+            color: white;
+            box-shadow: inset 0 0 6px #c0c0c0;
+        }
+
+        .Rare {
+            background: #2a7a8a;
+            color: white;
+            box-shadow: inset 0 0 6px #7fd4ff;
+        }
+
+        .Epic {
+            background: #9b4e9b;
+            color: white;
+            box-shadow: inset 0 0 6px #e7a5ff;
+        }
+
+        .Legendary {
+            background: #e6b422;
+            color: #1f1906;
+            box-shadow: inset 0 0 8px #ffffaa;
+        }
+
+        .card-points {
+            font-size: 0.7rem;
+            color: #ffcb77;
+            margin: 6px 0;
+        }
+
+        /* STATS TABLE */
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 5px;
+            border-bottom: 1px solid rgba(255, 200, 100, 0.25);
+            font-weight: 500;
+        }
+
+        button.small {
+            background: #ffb347;
+            border: none;
+            padding: 5px 14px;
+            border-radius: 30px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.1s;
+        }
+        button.small:active {
+            transform: scale(0.96);
+        }
+
+        .reset-btn {
+            background: #a04030;
+            color: white;
+            width: 100%;
+            padding: 12px;
+            border-radius: 40px;
+            font-weight: bold;
+            border: none;
+            margin-top: 20px;
+        }
+
+        h2, h3 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #FFE6B0, #F5BC6E);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        hr {
+            margin: 18px 0;
+            border-color: rgba(255,200,100,0.3);
+        }
+    </style>
+</head>
+<body>
+<div class="app" id="app"></div>
+
+<script>
+    // ------------------------ ANIMALS DATA ------------------------
+    const ANIMALS = [
+        { id: 0, name: "🐜 ANT", rarity: "Common", points: 10, icon: "🐜" },
+        { id: 1, name: "🐭 MOUSE", rarity: "Common", points: 10, icon: "🐭" },
+        { id: 2, name: "🐱 CAT", rarity: "Rare", points: 50, icon: "🐱" },
+        { id: 3, name: "🐕 DOG", rarity: "Rare", points: 55, icon: "🐕" },
+        { id: 4, name: "🦅 EAGLE", rarity: "Epic", points: 200, icon: "🦅" },
+        { id: 5, name: "🐉 DRAGON", rarity: "Legendary", points: 1000, icon: "🐉" },
+        { id: 6, name: "🐺 WOLF", rarity: "Epic", points: 180, icon: "🐺" }
+    ];
+    const COLORS = ["#FADB67","#F5CD86","#F0BA6C","#F1C282","#F6D596","#EBB45E","#E5A443"];
+    
+    let userPoints = 100;
+    let userCards = {};
+    let playerName = "Master";
+    let currentTab = "game";
+    let spinning = false;
+    let wheelAngle = 0;
+    
+    function loadData() {
+        let p = localStorage.getItem("ac_points");
+        if(p) userPoints = parseInt(p);
+        let c = localStorage.getItem("ac_cards");
+        if(c) userCards = JSON.parse(c);
+        else userCards = {};
+        let n = localStorage.getItem("ac_name");
+        if(n) playerName = n;
+    }
+    function saveData() {
+        localStorage.setItem("ac_points", userPoints);
+        localStorage.setItem("ac_cards", JSON.stringify(userCards));
+        localStorage.setItem("ac_name", playerName);
+    }
+    
+    function addCard(cardId, qty = 1) {
+        userCards[cardId] = (userCards[cardId] || 0) + qty;
+        saveData();
+    }
+    
+    function getRandomCard() {
+        let rand = Math.random() * 100;
+        if (rand < 60) return ANIMALS.filter(a => a.rarity === "Common")[Math.floor(Math.random() * 2)];
+        if (rand < 85) return ANIMALS.filter(a => a.rarity === "Rare")[Math.floor(Math.random() * 2)];
+        if (rand < 97) return ANIMALS.filter(a => a.rarity === "Epic")[Math.floor(Math.random() * 2)];
+        return ANIMALS.find(a => a.rarity === "Legendary");
+    }
+    
+    async function spinWheel() {
+        if (spinning) return;
+        if (userPoints < 10) {
+            alert("💎 Not enough points! Need 10 points to spin.");
+            return;
+        }
+        userPoints -= 10;
+        saveData();
+        spinning = true;
+        render();
+        let speed = 25 + Math.random() * 18;
+        let dec = 0.97;
+        function animate() {
+            speed *= dec;
+            wheelAngle += speed * 0.045;
+            drawWheel();
+            if (speed > 0.35) {
+                requestAnimationFrame(animate);
+            } else {
+                let card = getRandomCard();
+                addCard(card.id, 1);
+                userPoints += card.points;
+                saveData();
+                spinning = false;
+                render();
+                alert(`✨🌟 GOT ${card.name} (${card.rarity})! +${card.points} POINTS! 🌟✨`);
+            }
+        }
+        requestAnimationFrame(animate);
+    }
+    
+    let canvas, ctx;
+    function drawWheel() {
+        if (!canvas) return;
+        let w = canvas.width, h = canvas.height;
+        let cx = w/2, cy = h/2, r = w * 0.42;
+        ctx.clearRect(0, 0, w, h);
+        let start = wheelAngle;
+        let step = (Math.PI * 2) / ANIMALS.length;
+        for (let i = 0; i < ANIMALS.length; i++) {
+            let end = start + step;
+            ctx.beginPath();
+            ctx.moveTo(cx, cy);
+            ctx.arc(cx, cy, r, start, end);
+            ctx.fillStyle = COLORS[i % COLORS.length];
+            ctx.fill();
+            ctx.strokeStyle = "#a05a2c";
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            ctx.fillStyle = "#281e10";
+            ctx.font = `bold ${Math.max(18, r * 0.14)}px "Segoe UI"`;
+            let mid = start + step/2;
+            let x = cx + Math.cos(mid) * r * 0.68;
+            let y = cy + Math.sin(mid) * r * 0.68;
+            ctx.fillText(ANIMALS[i].icon, x-8, y+6);
+            start = end;
+        }
+        ctx.fillStyle = "#E25822";
+        ctx.shadowBlur = 6;
+        ctx.beginPath();
+        ctx.moveTo(cx-12, cy-r-10);
+        ctx.lineTo(cx, cy-r-28);
+        ctx.lineTo(cx+12, cy-r-10);
+        ctx.fill();
+        ctx.shadowBlur = 0;
+    }
+    
+    function render() {
+        let app = document.getElementById("app");
+        if (!app) return;
+        let totalCards = Object.values(userCards).reduce((a,b) => a+b, 0);
+        let unique = Object.keys(userCards).length;
+        
+        let html = `
+            <div class="header">
+                <div class="player-glow">✨ ${playerName}</div>
+                <div class="points-pill"><small>⭐</small> ${userPoints} <small>pts</small></div>
+            </div>
+            <div class="nav">
+                <button class="nav-btn ${currentTab === 'game' ? 'active' : ''}" onclick="setTab('game')">🎡 GAME</button>
+                <button class="nav-btn ${currentTab === 'collection' ? 'active' : ''}" onclick="setTab('collection')">📦 COLLECTION</button>
+                <button class="nav-btn ${currentTab === 'market' ? 'active' : ''}" onclick="setTab('market')">🛒 MARKET</button>
+                <button class="nav-btn ${currentTab === 'shop' ? 'active' : ''}" onclick="setTab('shop')">💎 SHOP</button>
+                <button class="nav-btn ${currentTab === 'profile' ? 'active' : ''}" onclick="setTab('profile')">🏆 PROFILE</button>
+            </div>
+        `;
+        
+        if (currentTab === 'game') {
+            html += `
+                <div class="glass-panel">
+                    <div class="wheel-area">
+                        <canvas id="wheelCanvas" width="280" height="280"></canvas>
+                        <button class="spin-button" onclick="spinWheel()">🌀 SPIN (10)</button>
+                    </div>
+                    <div class="card-grid" id="cardGrid"></div>
+                </div>
+            `;
+        } 
+        else if (currentTab === 'collection') {
+            html += `<div class="glass-panel"><h2>📦 MY COLLECTION</h2><div class="card-grid" id="cardGrid"></div></div>`;
+        }
+        else if (currentTab === 'market') {
+            html += `<div class="glass-panel"><h2>🛒 MARKETPLACE</h2><p style="text-align:center; padding:20px;">✨ Coming soon: trade cards with others ✨</p></div>`;
+        }
+        else if (currentTab === 'shop') {
+            html += `<div class="glass-panel"><h2>💎 CRYPTO SHOP</h2><p style="text-align:center;">⚡ Buy spins / points with BNB (BSC) — coming soon</p><p style="font-size:12px; text-align:center;">Dev wallet: 0xA79b2318...80c81</p></div>`;
+        }
+        else if (currentTab === 'profile') {
+            let rCount = { Common:0, Rare:0, Epic:0, Legendary:0 };
+            for (let [id, qty] of Object.entries(userCards)) {
+                let card = ANIMALS.find(c => c.id == id);
+                if (card) rCount[card.rarity] += qty;
+            }
+            html += `
+                <div class="glass-panel">
+                    <h2>🏆 COLLECTOR STATS</h2>
+                    <div class="stat-row"><span>🎖️ Name</span><span>${playerName} <button class="small" onclick="changeName()">✏️</button></span></div>
+                    <div class="stat-row"><span>⭐ Points</span><span>${userPoints}</span></div>
+                    <div class="stat-row"><span>🃏 Total cards</span><span>${totalCards}</span></div>
+                    <div class="stat-row"><span>✨ Unique cards</span><span>${unique} / ${ANIMALS.length}</span></div>
+                    <div class="stat-row"><span>📊 Progress</span><span>${Math.round(unique/ANIMALS.length*100)}%</span></div>
+                    <hr>
+                    <div class="stat-row"><span>📗 Common</span><span>${rCount.Common}</span></div>
+                    <div class="stat-row"><span>📘 Rare</span><span>${rCount.Rare}</span></div>
+                    <div class="stat-row"><span>📙 Epic</span><span>${rCount.Epic}</span></div>
+                    <div class="stat-row"><span>📕 Legendary</span><span>${rCount.Legendary}</span></div>
+                    <button class="reset-btn" onclick="resetGame()">🔄 RESET GAME</button>
+                </div>
+            `;
+        }
+        
+        app.innerHTML = html;
+        
+        if (currentTab === 'game' || currentTab === 'collection') {
+            let grid = document.getElementById("cardGrid");
+            if (grid) {
+                let cardsHtml = "";
+                for (let card of ANIMALS) {
+                    let qty = userCards[card.id] || 0;
+                    let hidden = (currentTab === 'game' && qty === 0);
+                    cardsHtml += `
+                        <div class="card">
+                            <div class="card-icon">${hidden ? '❓' : card.icon}</div>
+                            <div class="rarity-badge ${hidden ? 'Common' : card.rarity}">${hidden ? '???' : card.rarity}</div>
+                            <div class="card-points">⭐ ${hidden ? '?' : card.points}</div>
+                            <div>${hidden ? 'Not owned' : `Owned: ${qty}`}</div>
+                        </div>
+                    `;
+                }
+                grid.innerHTML = cardsHtml;
+            }
+        }
+        
+        if (currentTab === 'game') {
+            canvas = document.getElementById("wheelCanvas");
+            if (canvas) { ctx = canvas.getContext("2d"); drawWheel(); }
+        }
+    }
+    
+    function setTab(tab) { currentTab = tab; render(); }
+    function changeName() { let newName = prompt("Enter your legendary name:", playerName); if(newName?.trim()) { playerName = newName.trim(); saveData(); render(); } }
+    function resetGame() { if(confirm("⚠️ RESET will remove all cards and points. Proceed?")) { userPoints=100; userCards={}; saveData(); render(); } }
+    
+    window.setTab = setTab;
+    window.spinWheel = spinWheel;
+    window.changeName = changeName;
+    window.resetGame = resetGame;
+    
+    loadData();
+    render();
+</script>
+</body>
+</html>
