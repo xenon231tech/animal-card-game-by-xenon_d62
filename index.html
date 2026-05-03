@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>🐉 ANIMALS CARD GAME</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #0f2e1a, #030a04);
+            min-height: 100vh;
+            padding: 20px;
+            color: white;
+        }
+
+        /* LOGIN PAGE */
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 80vh;
+        }
+
+        .login-box {
+            background: rgba(0,0,0,0.7);
+            padding: 40px;
+            border-radius: 30px;
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+        }
+
+        .login-box input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 30px;
+            border: none;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            font-size: 16px;
+        }
+
+        .login-box button {
+            background: #ffb347;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        /* MAIN APP */
+        .app {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: rgba(0,0,0,0.5);
+            padding: 15px;
+            border-radius: 30px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            background: rgba(0,0,0,0.5);
+            padding: 10px 20px;
+            border: none;
+            border-radius: 30px;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .nav-btn.active {
+            background: #ffb347;
+            color: black;
+        }
+
+        .panel {
+            background: rgba(0,0,0,0.5);
+            padding: 20px;
+            border-radius: 30px;
+            margin-bottom: 20px;
+        }
+
+        .spin-area {
+            text-align: center;
+        }
+
+        canvas {
+            background: #ffefcf;
+            border-radius: 50%;
+            margin: 20px auto;
+            display: block;
+            box-shadow: 0 0 0 5px #ffdd99, 0 0 0 10px #b87333;
+        }
+
+        .spin-btn {
+            background: #ffb347;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 50px;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 20px 0;
+        }
+
+        .card-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .card {
+            background: rgba(0,0,0,0.7);
+            padding: 10px;
+            border-radius: 20px;
+            text-align: center;
+            width: 100px;
+        }
+
+        .card-icon {
+            font-size: 40px;
+        }
+
+        .rarity {
+            font-size: 11px;
+            padding: 3px 8px;
+            border-radius: 20px;
+            display: inline-block;
+            margin: 5px 0;
+        }
+
+        .Common { background: gray; }
+        .Rare { background: #2a7a8a; }
+        .Epic { background: #9b4e9b; }
+        .Legendary { background: gold; color: black; }
+
+        .shop-item {
+            background: rgba(0,0,0,0.5);
+            padding: 15px;
+            border-radius: 20px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .buy-btn {
+            background: #ffb347;
+            padding: 8px 20px;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        button {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<!-- LOGIN PAGE -->
+<div id="loginPage">
+    <div class="login-container">
+        <div class="login-box">
+            <h1>🐉 ANIMALS CARD</h1>
+            <p style="margin: 10px 0 20px;">Enter the Arena • Collect • Earn</p>
+            <input type="text" id="username" placeholder="Username">
+            <input type="text" id="wallet" placeholder="EVM Wallet Address (0x...)">
+            <button onclick="login()">🚀 START GAME</button>
+            <p id="errorMsg" style="color: red; margin-top: 15px;"></p>
+        </div>
+    </div>
+</div>
+
+<!-- MAIN GAME -->
+<div id="mainApp" class="hidden">
+    <div class="app">
+        <div class="header">
+            <div>
+                <div id="playerName" style="font-weight: bold;">Player</div>
+                <div id="playerWallet" style="font-size: 12px;">0x...</div>
+            </div>
+            <div style="text-align: right;">
+                <div id="pointsDisplay" style="font-size: 20px; color: gold;">⭐ 0</div>
+                <div id="spinsDisplay">🎡 0 spins</div>
+            </div>
+            <button onclick="logout()" style="background: #8a3a3a; padding: 5px 15px; border: none; border-radius: 20px;">Exit</button>
+        </div>
+
+        <div class="nav">
+            <button class="nav-btn active" onclick="showTab('game')">🎡 GAME</button>
+            <button class="nav-btn" onclick="showTab('collection')">📦 COLLECTION</button>
+            <button class="nav-btn" onclick="showTab('shop')">💰 SHOP</button>
+            <button class="nav-btn" onclick="showTab('stats')">📊 STATS</button>
+        </div>
+
+        <!-- GAME TAB -->
+        <div id="gameTab" class="panel spin-area">
+            <h2>🎡 SPIN THE WHEEL</h2>
+            <canvas id="wheel" width="250" height="250"></canvas>
+            <div>
+                <button class="spin-btn" onclick="spin()">🌀 SPIN!</button>
+            </div>
+            <div class="card-grid" id="recentCards"></div>
+        </div>
+
+        <!-- COLLECTION TAB -->
+        <div id="collectionTab" class="panel hidden">
+            <h2>📦 MY COLLECTION</h2>
+            <div class="card-grid" id="collectionGrid"></div>
+        </div>
+
+        <!-- SHOP TAB -->
+        <div id="shopTab" class="panel hidden">
+            <h2>💰 SPIN SHOP</h2>
+            <div class="shop-item">
+                <span>🎡 10 Spins</span>
+                <span>💵 1 USDC</span>
+                <button class="buy-btn" onclick="buySpins(10, 1)">Buy</button>
+            </div>
+            <div class="shop-item">
+                <span>🎡 50 Spins (+5 Bonus)</span>
+                <span>💵 5 USDC</span>
+                <button class="buy-btn" onclick="buySpins(55, 5)">Buy</button>
+            </div>
+            <div class="shop-item">
+                <span>🐉 100 Spins (+Legendary)</span>
+                <span>💵 10 USDC</span>
+                <button class="buy-btn" onclick="buySpins(120, 10)">Buy</button>
+            </div>
+            <hr style="margin: 20px 0;">
+            <p style="text-align: center; font-size: 12px;">
+                💳 Send USDC to:<br>
+                <strong>0xA79b23182e191fDFb5049FFFb5BEE54830980c81</strong>
+            </p>
+        </div>
+
+        <!-- STATS TAB -->
+        <div id="statsTab" class="panel hidden">
+            <h2>📊 STATISTICS</h2>
+            <div id="statsContent"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ========== GAME DATA ==========
+    const ANIMALS = [
+        { name: "🐜 ANT", rarity: "Common", points: 10, icon: "🐜" },
+        { name: "🐭 MOUSE", rarity: "Common", points: 10, icon: "🐭" },
+        { name: "🐱 CAT", rarity: "Rare", points: 50, icon: "🐱" },
+        { name: "🐕 DOG", rarity: "Rare", points: 55, icon: "🐕" },
+        { name: "🦅 EAGLE", rarity: "Epic", points: 200, icon: "🦅" },
+        { name: "🐉 DRAGON", rarity: "Legendary", points: 1000, icon: "🐉" },
+        { name: "🐺 WOLF", rarity: "Epic", points: 180, icon: "🐺" }
+    ];
+
+    // User data
+    let currentUser = null;
+    let allUsers = {};
+
+    // Spin state
+    let spinning = false;
+    let wheelAngle = 0;
+    let canvas, ctx;
+
+    // ========== LOGIN SYSTEM ==========
+    function login() {
+        let username = document.getElementById("username").value.trim();
+        let wallet = document.getElementById("wallet").value.trim();
+
+        if (!username) {
+            document.getElementById("errorMsg").innerText = "Username required!";
+            return;
+        }
+        if (!wallet || !wallet.startsWith("0x")) {
+            document.getElementById("errorMsg").innerText = "Valid EVM wallet required! (0x...)";
+            return;
+        }
+
+        // Load existing users
+        let saved = localStorage.getItem("ac_users");
+        if (saved) allUsers = JSON.parse(saved);
+
+        if (allUsers[username]) {
+            if (allUsers[username].wallet !== wallet) {
+                document.getElementById("errorMsg").innerText = "Wrong wallet for this username!";
+                return;
+            }
+        } else {
+            // Create new user
+            allUsers[username] = {
+                wallet: wallet,
+                points: 0,
+                spins: 5,
+                cards: {},
+                joined: Date.now()
+            };
+            localStorage.setItem("ac_users", JSON.stringify(allUsers));
+        }
+
+        currentUser = username;
+        localStorage.setItem("ac_currentUser", username);
+
+        // Show game
+        document.getElementById("loginPage").style.display = "none";
+        document.getElementById("mainApp").classList.remove("hidden");
+        
+        updateUI();
+        showTab("game");
+    }
+
+    function logout() {
+        currentUser = null;
+        localStorage.removeItem("ac_currentUser");
+        document.getElementById("loginPage").style.display = "flex";
+        document.getElementById("mainApp").classList.add("hidden");
+        document.getElementById("username").value = "";
+        document.getElementById("wallet").value = "";
+    }
+
+    function saveUser() {
+        if (currentUser && allUsers[currentUser]) {
+            localStorage.setItem("ac_users", JSON.stringify(allUsers));
+        }
+    }
+
+    // ========== GAME FUNCTIONS ==========
+    function getRandomCard() {
+        let rand = Math.random() * 100;
+        if (rand < 60) return ANIMALS.filter(a => a.rarity === "Common")[Math.floor(Math.random() * 2)];
+        if (rand < 85) return ANIMALS.filter(a => a.rarity === "Rare")[Math.floor(Math.random() * 2)];
+        if (rand < 97) return ANIMALS.filter(a => a.rarity === "Epic")[Math.floor(Math.random() * 2)];
+        return ANIMALS.find(a => a.rarity === "Legendary");
+    }
+
+    function spin() {
+        if (spinning) return;
+        let user = allUsers[currentUser];
+        if (user.spins <= 0) {
+            alert("No spins left! Buy from shop!");
+            return;
+        }
+
+        user.spins--;
+        spinning = true;
+        updateUI();
+
+        let speed = 20 + Math.random() * 15;
+        let dec = 0.97;
+
+        function animate() {
+            speed *= dec;
+            wheelAngle += speed * 0.05;
+            drawWheel();
+            if (speed > 0.5) {
+                requestAnimationFrame(animate);
+            } else {
+                let card = getRandomCard();
+                user.cards[card.name] = (user.cards[card.name] || 0) + 1;
+                user.points += card.points;
+                saveUser();
+                spinning = false;
+                updateUI();
+                alert(`🎉 GOT ${card.name} (${card.rarity})! +${card.points} points!`);
+            }
+        }
+        requestAnimationFrame(animate);
+    }
+
+    function drawWheel() {
+        if (!canvas) return;
+        let w = canvas.width, h = canvas.height;
+        let cx = w/2, cy = h/2, r = 100;
+        ctx.clearRect(0, 0, w, h);
+        let start = wheelAngle;
+        let step = (Math.PI * 2) / ANIMALS.length;
+        let colors = ["#FADB67","#F5CD86","#F0BA6C","#F1C282","#F6D596","#EBB45E","#E5A443"];
+        
+        for (let i = 0; i < ANIMALS.length; i++) {
+            let end = start + step;
+            ctx.beginPath();
+            ctx.moveTo(cx, cy);
+            ctx.arc(cx, cy, r, start, end);
+            ctx.fillStyle = colors[i];
+            ctx.fill();
+            ctx.strokeStyle = "#a05a2c";
+            ctx.stroke();
+            ctx.fillStyle = "black";
+            ctx.font = "bold 20px Arial";
+            let mid = start + step/2;
+            let x = cx + Math.cos(mid) * 70;
+            let y = cy + Math.sin(mid) * 70;
+            ctx.fillText(ANIMALS[i].icon, x-8, y+6);
+            start = end;
+        }
+        ctx.fillStyle = "red";
+        ctx.beginPath();
+        ctx.moveTo(cx-10, cy-115);
+        ctx.lineTo(cx, cy-130);
+        ctx.lineTo(cx+10, cy-115);
+        ctx.fill();
+    }
+
+    function buySpins(spins, price) {
+        if (confirm(`Buy ${spins} spins for $${price} USDC?\n\nSend to: 0xA79b23182e191fDFb5049FFFb5BEE54830980c81`)) {
+            let demo = prompt("DEMO MODE: Type 'DEMO' to add spins", "");
+            if (demo === "DEMO") {
+                allUsers[currentUser].spins += spins;
+                saveUser();
+                updateUI();
+                alert(`✅ +${spins} spins added!`);
+            }
+        }
+    }
+
+    // ========== UI UPDATE ==========
+    function updateUI() {
+        if (!currentUser) return;
+        let user = allUsers[currentUser];
+        
+        document.getElementById("playerName").innerText = currentUser;
+        document.getElementById("playerWallet").innerText = user.wallet.slice(0,8)+"...";
+        document.getElementById("pointsDisplay").innerHTML = `⭐ ${user.points}`;
+        document.getElementById("spinsDisplay").innerHTML = `🎡 ${user.spins} spins`;
+        
+        updateCollection();
+        updateStats();
+        updateRecentCards();
+    }
+
+    function updateCollection() {
+        let user = allUsers[currentUser];
+        let html = "";
+        for (let card of ANIMALS) {
+            let qty = user.cards[card.name] || 0;
+            html += `
+                <div class="card">
+                    <div class="card-icon">${card.icon}</div>
+                    <div class="rarity ${card.rarity}">${card.rarity}</div>
+                    <div>⭐ ${card.points}</div>
+                    <div>Owned: ${qty}</div>
+                </div>
+            `;
+        }
+        document.getElementById("collectionGrid").innerHTML = html;
+    }
+
+    function updateStats() {
+        let user = allUsers[currentUser];
+        let totalCards = 0;
+        let uniqueCards = 0;
+        for (let card of ANIMALS) {
+            let qty = user.cards[card.name] || 0;
+            totalCards += qty;
+            if (qty > 0) uniqueCards++;
+        }
+        
+        let html = `
+            <div class="stat-row"><span>⭐ Total Points</span><span>${user.points}</span></div>
+            <div class="stat-row"><span>🎡 Spins Used</span><span>${Math.floor(user.points/10)}</span></div>
+            <div class="stat-row"><span>🃏 Total Cards</span><span>${totalCards}</span></div>
+            <div class="stat-row"><span>✨ Unique Cards</span><span>${uniqueCards}/${ANIMALS.length}</span></div>
+            <div class="stat-row"><span>📊 Progress</span><span>${Math.round(uniqueCards/ANIMALS.length*100)}%</span></div>
+        `;
+        document.getElementById("statsContent").innerHTML = html;
+    }
+
+    function updateRecentCards() {
+        let user = allUsers[currentUser];
+        let recent = Object.keys(user.cards).slice(-6).reverse();
+        let html = "";
+        for (let name of recent) {
+            let card = ANIMALS.find(c => c.name === name);
+            if (card) {
+                html += `
+                    <div class="card">
+                        <div class="card-icon">${card.icon}</div>
+                        <div class="rarity ${card.rarity}">${card.rarity}</div>
+                        <div>⭐ ${card.points}</div>
+                    </div>
+                `;
+            }
+        }
+        if (html === "") html = "<p>Spin to get your first card!</p>";
+        document.getElementById("recentCards").innerHTML = html;
+    }
+
+    // ========== TAB NAVIGATION ==========
+    function showTab(tab) {
+        document.getElementById("gameTab").classList.add("hidden");
+        document.getElementById("collectionTab").classList.add("hidden");
+        document.getElementById("shopTab").classList.add("hidden");
+        document.getElementById("statsTab").classList.add("hidden");
+        
+        document.getElementById(`${tab}Tab`).classList.remove("hidden");
+        
+        document.querySelectorAll(".nav-btn").forEach(btn => btn.classList.remove("active"));
+        event.target.classList.add("active");
+        
+        if (tab === "game") {
+            canvas = document.getElementById("wheel");
+            ctx = canvas.getContext("2d");
+            drawWheel();
+        }
+    }
+
+    // ========== CHECK LOGIN ==========
+    function checkLogin() {
+        let saved = localStorage.getItem("ac_currentUser");
+        let users = localStorage.getItem("ac_users");
+        if (saved && users) {
+            allUsers = JSON.parse(users);
+            if (allUsers[saved]) {
+                currentUser = saved;
+                document.getElementById("loginPage").style.display = "none";
+                document.getElementById("mainApp").classList.remove("hidden");
+                updateUI();
+                showTab("game");
+            }
+        }
+    }
+
+    // Make functions global
+    window.login = login;
+    window.logout = logout;
+    window.spin = spin;
+    window.buySpins = buySpins;
+    window.showTab = showTab;
+
+    // Start
+    checkLogin();
+</script>
+</body>
+</html>
