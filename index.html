@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Animals Card | Spin & Trade with Crypto</title>
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.8.0/dist/web3.min.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            user-select: none;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a472a, #0e2a1a);
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        .app {
+            max-width: 550px;
+            margin: 0 auto;
+        }
+        .header {
+            background: rgba(0,0,0,0.5);
+            border-radius: 40px;
+            padding: 12px 15px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .wallet-area {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #2c1c12;
+            padding: 5px 12px;
+            border-radius: 50px;
+        }
+        .wallet-status {
+            font-size: 0.7rem;
+            color: #ffaa66;
+        }
+        .points {
+            background: #2c1c12;
+            padding: 8px 18px;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: gold;
+        }
+        .nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        .nav-btn {
+            background: #4a6a2a;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 40px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 0.85rem;
+        }
+        .nav-btn.active {
+            background: #ffb347;
+            color: #2c1a0a;
+        }
+        .panel {
+            background: rgba(44,28,18,0.95);
+            border-radius: 30px;
+            padding: 20px;
+            color: #ffefc0;
+        }
+        .panel h2, .panel h3 {
+            text-align: center;
+            margin-top: 0;
+        }
+        .wheel-container {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        canvas {
+            background: #f9e7c2;
+            border-radius: 50%;
+            box-shadow: 0 10px 25px black;
+            max-width: 100%;
+            height: auto;
+        }
+        .spin-btn {
+            position: absolute;
+            bottom: 5px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #ffb347;
+            border: none;
+            font-size: 1.2rem;
+            font-weight: bold;
+            padding: 8px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 5px 0 #a15917;
+        }
+        .spin-btn:active {
+            transform: translateX(-50%) translateY(3px);
+            box-shadow: 0 2px 0 #a15917;
+        }
+        .card-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 15px;
+            max-height: 350px;
+            overflow-y: auto;
+        }
+        .card {
+            background: #3a2a1a;
+            border-radius: 20px;
+            padding: 10px;
+            text-align: center;
+            width: 100px;
+            cursor: pointer;
+            transition: 0.1s;
+        }
+        .card-name {
+            font-size: 1.3rem;
+        }
+        .card-rarity {
+            font-size: 0.65rem;
+            padding: 2px 6px;
+            border-radius: 20px;
+            display: inline-block;
+            margin: 5px 0;
+        }
+        .rarity-Common { background: #888; color: white; }
+        .rarity-Rare { background: #2a6a8a; color: white; }
+        .rarity-Epic { background: #8a5a8a; color: white; }
+        .rarity-Legendary { background: #d4af37; color: #2c1a0a; }
+        .listing {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #3a2a1a;
+            border-radius: 20px;
+            padding: 10px;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .leaderboard-entry {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px;
+            border-bottom: 1px solid #5a4a3a;
+        }
+        input, select {
+            padding: 6px;
+            border-radius: 20px;
+            border: none;
+            margin: 5px;
+        }
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            justify-content: center;
+        }
+        .tab-btn {
+            background: #5a4a3a;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 30px;
+            color: white;
+            cursor: pointer;
+        }
+        .tab-btn.active {
+            background: #ffb347;
+            color: #2c1a0a;
+        }
+        button.small {
+            background: #ffb347;
+            border: none;
+            padding: 4px 10px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.7rem;
+        }
+        button.crypto {
+            background: #f0b90b;
+            color: #1a1a1a;
+        }
+        hr {
+            border-color: #5a4a3a;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+<div class="app" id="app"></div>
+
+<script>
+    // ==================== WALLET CONNECT + BSC PAYMENT ====================
+    let web3 = null;
+    let walletConnected = false;
+    let userWalletAddress = null;
+    const DEV_WALLET = "0xA79b23182e191fDFb5049FFFb5BEE54830980c81";
+    
+    async function initWallet() {
+        if (typeof window.ethereum !== 'undefined') {
+            web3 = new Web3(window.ethereum);
+            const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+            if (accounts.length > 0) {
+                userWalletAddress = accounts[0];
+                walletConnected = true;
+            }
+            window.ethereum.on('accountsChanged', (accounts) => {
+                if (accounts.length > 0) {
+                    userWalletAddress = accounts[0];
+                    walletConnected = true;
+                } else {
+                    userWalletAddress = null;
+                    walletConnected = false;
+                }
+                render();
+            });
+        } else {
+            console.log("No wallet detected");
+        }
+    }
+    
+    async function connectWallet() {
+        if (!window.ethereum) {
+            alert("No wallet detected!\n\n📱 Install Trust Wallet or MetaMask.\nThen come back and click Connect.");
+            return false;
+        }
+        try {
+            const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+            userWalletAddress = accounts[0];
+            walletConnected = true;
+            web3 = new Web3(window.ethereum);
+            render();
+            alert(`✅ Wallet connected: ${userWalletAddress.slice(0,6)}...${userWalletAddress.slice(-4)}`);
+            return true;
+        } catch (error) {
+            console.error(error);
+            alert("❌ Connection failed. Make sure wallet is unlocked.");
+            return false;
+        }
+    }
+    
+    async function disconnectWallet() {
+        userWalletAddress = null;
+        walletConnected = false;
+        render();
+        alert("Wallet disconnected");
+    }
+    
+    async function sendBNBPayment(amountBNB, onSuccess) {
+        if (!walletConnected || !userWalletAddress) {
+            let confirm = confirm("Wallet not connected. Connect now?");
+            if (confirm) {
+                let success = await connectWallet();
+                if (!success) return false;
+            } else {
+                return false;
+            }
+        }
+        if (!web3) {
+            alert("Web3 not ready. Refresh and try again.");
+            return false;
+        }
+        const amountInWei = web3.utils.toWei(amountBNB.toString(), 'ether');
+        try {
+            const txHash = await window.ethereum.request({
+                method: 'eth_sendTransaction',
+                params: [{
+                    from: userWalletAddress,
+                    to: DEV_WALLET,
+                    value: amountInWei,
+                    gas: '0x5208',
+                }],
+            });
+            alert(`✅ Payment sent!\nTX: ${txHash.slice(0,10)}...\nAdding points to your game...`);
+            setTimeout(() => {
+                if (onSuccess) onSuccess(amountBNB);
+            }, 3000);
+            return true;
+        } catch (error) {
+            alert(`❌ Transaction failed: ${error.message || error}`);
+            return false;
+        }
+    }
+    
+    // ==================== GAME DATA ====================
+    const ANIMALS = [
+        { id: 0, name: "🐜 ANT", rarity: "Common", points: 10, icon: "🐜" },
+        { id: 1, name: "🐭 MOUSE", rarity: "Common", points: 10, icon: "🐭" },
+        { id: 2, name: "🐱 CAT", rarity: "Rare", points: 50, icon: "🐱" },
+        { id: 3, name: "🐕 DOG", rarity: "Rare", points: 55, icon: "🐕" },
+        { id: 4, name: "🦅 EAGLE", rarity: "Epic", points: 200, icon: "🦅" },
+        { id: 5, name: "🐉 DRAGON", rarity: "Legendary", points: 1000, icon: "🐉" },
+        { id: 6, name: "🐺 WOLF", rarity: "Epic", points: 180, icon: "🐺" }
+    ];
+    const COLORS = ["#F9E0A0","#F5CD86","#F0BA6C","#F1C282","#F6D596","#EBB45E","#E5A443"];
+    
+    let userPoints = 100;
+    let userCards = {};
+    let marketplaceListings = [];
+    let playerName = "Player";
+    let currentTab = "game";
+    let spinning = false;
+    let wheelAngle = 0;
+    let marketShowSell = false;
+    
+    function loadData() {
+        let p = localStorage.getItem("ac_points");
+        if(p) userPoints = parseInt(p);
+        let c = localStorage.getItem("ac_cards");
+        if(c) userCards = JSON.parse(c);
+        else userCards = {};
+        let m = localStorage.getItem("ac_market");
+        if(m) marketplaceListings = JSON.parse(m);
+        let n = localStorage.getItem("ac_name");
+        if(n) playerName = n;
+    }
+    function saveData() {
+        localStorage.setItem("ac_points", userPoints);
+        localStorage.setItem("ac_cards", JSON.stringify(userCards));
+        localStorage.setItem("ac_market", JSON.stringify(marketplaceListings));
+        localStorage.setItem("ac_name", playerName);
+    }
+    
+    function addCard(cardId, qty = 1) {
+        userCards[cardId] = (userCards[cardId] || 0) + qty;
+        saveData();
+    }
+    function removeCard(cardId, qty = 1) {
+        if (!userCards[cardId] || userCards[cardId] < qty) return false;
+        userCards[cardId] -= qty;
+        if (userCards[cardId] === 0) delete userCards[cardId];
+        saveData();
+        return true;
+    }
+    
+    function getRandomCard() {
+        let rand = Math.random() * 100;
+        if (rand < 60) return ANIMALS.filter(a => a.rarity === "Common")[Math.floor(Math.random() * 2)];
+        if (rand < 85) return ANIMALS.filter(a => a.rarity === "Rare")[Math.floor(Math.random() * 2)];
+        if (rand < 97) return ANIMALS.filter(a => a.rarity === "Epic")[Math.floor(Math.random() * 2)];
+        return ANIMALS.find(a => a.rarity === "Legendary");
+    }
+    
+    async function spinWheel() {
+        if (spinning) return;
+        if (userPoints < 10) {
+            alert("Not enough points! Need 10 points to spin.");
+            return;
+        }
+        userPoints -= 10;
+        saveData();
+        spinning = true;
+        render();
+        let speed = 25 + Math.random() * 15;
+        let dec = 0.97;
+        function animate() {
+            speed *= dec;
+            wheelAngle += speed * 0.05;
+            drawWheel();
+            if (speed > 0.3) requestAnimationFrame(animate);
+            else {
+                let card = getRandomCard();
+                addCard(card.id, 1);
+                userPoints += card.points;
+                saveData();
+                spinning = false;
+                render();
+                alert(`🎉 GOT ${card.name} (${card.rarity})!\n+${card.points} points!`);
+            }
+        }
+        requestAnimationFrame(animate);
+    }
+    
+    let canvas, ctx;
+    function drawWheel() {
+        if (!canvas) return;
+        let w = canvas.width, h = canvas.height;
+        let cx = w/2, cy = h/2, r = w * 0.42;
+        ctx.clearRect(0, 0, w, h);
+        let start = wheelAngle;
+        let step = (Math.PI * 2) / ANIMALS.length;
+        for (let i = 0; i < ANIMALS.length; i++) {
+            let end = start + step;
+            ctx.beginPath();
+            ctx.moveTo(cx, cy);
+            ctx.arc(cx, cy, r, start, end);
+            ctx.fillStyle = COLORS[i % COLORS.length];
+            ctx.fill();
+            ctx.strokeStyle = "#6b3c12";
+            ctx.stroke();
+            ctx.fillStyle = "#2d1f0a";
+            ctx.font = "bold 18px Arial";
+            let mid = start + step/2;
+            let x = cx + Math.cos(mid) * r * 0.65;
+            let y = cy + Math.sin(mid) * r * 0.65;
+            ctx.fillText(ANIMALS[i].icon, x-8, y+6);
+            start = end;
+        }
+        ctx.fillStyle = "red";
+        ctx.beginPath();
+        ctx.moveTo(cx-10, cy-r-8);
+        ctx.lineTo(cx, cy-r-22);
+        ctx.lineTo(cx+10, cy-r-8);
+        ctx.fill();
+    }
+    
+    function sellCard(cardId, price) {
+        let card = ANIMALS.find(c => c.id === cardId);
+        if (!card) return;
+        if (!userCards[cardId] || userCards[cardId] < 1) { alert("You don't have this card!"); return; }
+        let p = parseInt(price);
+        if (isNaN(p) || p < 10) { alert("Price must be at least 10 points"); return; }
+        marketplaceListings.push({ id: Date.now(), cardId, cardName: card.name, cardIcon: card.icon, rarity: card.rarity, price: p, seller: playerName });
+        removeCard(cardId, 1);
+        saveData();
+        render();
+        alert(`${card.name} listed for ${p} points!`);
+    }
+    
+    function buyListing(listingId) {
+        let listing = marketplaceListings.find(l => l.id === listingId);
+        if (!listing) { alert("Listing not found!"); return; }
+        if (userPoints < listing.price) { alert(`Not enough points! Need ${listing.price} points.`); return; }
+        userPoints -= listing.price;
+        addCard(listing.cardId, 1);
+        marketplaceListings = marketplaceListings.filter(l => l.id !== listingId);
+        saveData();
+        render();
+        alert(`Bought ${listing.cardName} for ${listing.price} points!`);
+    }
+    
+    function cancelListing(listingId) {
+        let listing = marketplaceListings.find(l => l.id === listingId);
+        if (listing && listing.seller === playerName) {
+            addCard(listing.cardId, 1);
+            marketplaceListings = marketplaceListings.filter(l => l.id !== listingId);
+            saveData();
+            render();
+            alert(`Listing canceled, card returned.`);
+        }
+    }
+    
+    function changeName() {
+        let newName = prompt("Enter your player name:", playerName);
+        if (newName && newName.trim()) { playerName = newName.trim(); saveData(); render(); }
+    }
+    
+    function resetGame() {
+        if (confirm("Reset all data? Points, cards, marketplace will be wiped!")) {
+            userPoints = 100;
+            userCards = {};
+            marketplaceListings = [];
+            saveData();
+            render();
+        }
+    }
+    
+    function buyPointsWithBNB(amountPoints, amountBNB) {
+        sendBNBPayment(amountBNB, () => {
+            userPoints += amountPoints;
+            saveData();
+            render();
+            alert(`🎉 +${amountPoints} points added to your account!`);
+        });
+    }
+    
+    function render() {
+        let app = document.getElementById("app");
+        if (!app) return;
+        let totalCardsOwned = Object.values(userCards).reduce((a,b) => a+b, 0);
+        let uniqueCards = Object.keys(userCards).length;
+        let walletShort = userWalletAddress ? `${userWalletAddress.slice(0,6)}...${userWalletAddress.slice(-4)}` : "Not connected";
+        
+        let html = `
+            <div class="header">
+                <div class="wallet-area">
+                    <span>🦊</span>
+                    <span class="wallet-status">${walletConnected ? '🟢' : '🔴'} ${walletShort}</span>
+                    ${!walletConnected ? `<button class="small" onclick="connectWallet()">Connect</button>` : `<button class="small" onclick="disconnectWallet()">Disconnect</button>`}
+                </div>
+                <div class="points">⭐ ${userPoints} pts</div>
+            </div>
+            <div class="nav">
+                <button class="nav-btn ${currentTab === 'game' ? 'active' : ''}" onclick="setTab('game')">🎮 GAME</button>
+                <button class="nav-btn ${currentTab === 'collection' ? 'active' : ''}" onclick="setTab('collection')">📦 COLLECTION</button>
+                <button class="nav-btn ${currentTab === 'market' ? 'active' : ''}" onclick="setTab('market')">🛒 MARKET</button>
+                <button class="nav-btn ${currentTab === 'shop' ? 'active' : ''}" onclick="setTab('shop')">💰 CRYPTO SHOP</button>
+                <button class="nav-btn ${currentTab === 'profile' ? 'active' : ''}" onclick="setTab('profile')">👤 PROFILE</button>
+            </div>
+        `;
+        
+        if (currentTab === 'game') {
+            html += `
+                <div class="panel">
+                    <div class="wheel-container">
+                        <canvas id="wheelCanvas" width="280" height="280"></canvas>
+                        <button class="spin-btn" onclick="spinWheel()">🎡 SPIN! (10 pts)</button>
+                    </div>
+                    <div class="card-grid" id="cardGrid"></div>
+                </div>
+            `;
+        }
+        else if (currentTab === 'collection') {
+            html += `
+                <div class="panel">
+                    <h2>📦 COLLECTION</h2>
+                    <p>📊 Total: ${totalCardsOwned} | Unique: ${uniqueCards}/${ANIMALS.length}</p>
+                    <div class="card-grid" id="cardGrid"></div>
+                </div>
+            `;
+        }
+        else if (currentTab === 'market') {
+            html += `
+                <div class="panel">
+                    <h2>🛒 MARKETPLACE</h2>
+                    <div class="tabs">
+                        <button class="tab-btn ${!marketShowSell ? 'active' : ''}" onclick="toggleMarketSell(false)">BUY</button>
+                        <button class="tab-btn ${marketShowSell ? 'active' : ''}" onclick="toggleMarketSell(true)">SELL</button>
+                    </div>
+                    <div id="marketContent"></div>
+                </div>
+            `;
+        }
+        else if (currentTab === 'shop') {
+            html += `
+                <div class="panel">
+                    <h2>💰 CRYPTO SHOP</h2>
+                    <p>💎 Buy in-game points with BNB (BSC)</p>
+                    <div class="listing" style="flex-direction:column;">
+                        <div style="display:flex; justify-content:space-between; width:100%;">
+                            <span>🎮 +100 Points</span>
+                            <span>≈ 0.0005 BNB</span>
+                            <button class="small crypto" onclick="buyPointsWithBNB(100, 0.0005)">Buy 100 pts</button>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; width:100%; margin-top:8px;">
+                            <span>🎮🎮 +500 Points</span>
+                            <span>≈ 0.002 BNB</span>
+                    
