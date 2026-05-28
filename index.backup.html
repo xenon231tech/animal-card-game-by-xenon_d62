@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Animal Card Collection</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #0a2e1a, #030a04);
+            min-height: 100vh;
+            padding: 20px;
+            color: white;
+        }
+        .app {
+            max-width: 550px;
+            margin: 0 auto;
+        }
+        .header {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 20px;
+        }
+        .stats-box {
+            background: rgba(0,0,0,0.5);
+            padding: 8px 18px;
+            border-radius: 30px;
+            text-align: center;
+        }
+        .points {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #FFD966;
+        }
+        .spins {
+            font-size: 0.8rem;
+        }
+        .title {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .title h1 {
+            font-size: 1.5rem;
+            letter-spacing: 2px;
+            color: #FFD966;
+        }
+        .wheel-container {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        canvas {
+            background: #ffefcf;
+            border-radius: 50%;
+            box-shadow: 0 0 0 6px #ffdd99, 0 0 0 12px #b87333;
+            width: 100%;
+            max-width: 280px;
+            height: auto;
+        }
+        .spin-btn {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #ffb347;
+            border: none;
+            font-weight: bold;
+            font-size: 1rem;
+            padding: 8px 24px;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 5px 0 #984d0c;
+            color: #1a1a0a;
+        }
+        .labels {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+        .label {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+        .label-legendary { background: #e6b422; color: black; }
+        .label-epic { background: #9b4e9b; }
+        .label-rare { background: #2a7a8a; }
+        .label-common { background: #6b6b6b; }
+        .card-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        .card {
+            background: rgba(0,0,0,0.6);
+            border-radius: 16px;
+            padding: 10px;
+            text-align: center;
+            width: 90px;
+            border: 1px solid rgba(255,180,70,0.4);
+        }
+        .card-icon {
+            font-size: 1.8rem;
+        }
+        .card-rarity {
+            font-size: 0.6rem;
+            padding: 2px 6px;
+            border-radius: 20px;
+            display: inline-block;
+            margin: 5px 0;
+        }
+        .nav {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 30px;
+            padding: 12px 0;
+            border-top: 1px solid rgba(255,200,100,0.3);
+        }
+        .nav-btn {
+            background: rgba(0,0,0,0.6);
+            border: 1px solid rgba(255,200,100,0.4);
+            padding: 8px 14px;
+            border-radius: 30px;
+            color: #e0d6b0;
+            cursor: pointer;
+            font-size: 0.75rem;
+        }
+        .nav-btn.active {
+            background: #ffb347;
+            color: black;
+            border-color: #ffb347;
+        }
+        .panel {
+            background: rgba(0,0,0,0.6);
+            border-radius: 24px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        .panel h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #FFD966;
+            font-size: 1.2rem;
+        }
+        .shop-item {
+            background: rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 12px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .buy-btn {
+            background: #ffb347;
+            border: none;
+            padding: 6px 16px;
+            border-radius: 30px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255,200,100,0.2);
+        }
+        .progress-bar {
+            background: #2c1c12;
+            border-radius: 20px;
+            height: 16px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        .progress-fill {
+            background: #ffb347;
+            height: 100%;
+            width: 0%;
+            border-radius: 20px;
+        }
+        .hidden {
+            display: none;
+        }
+        button {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<div class="app">
+
+    <div class="header">
+        <div class="stats-box">
+            <div class="points" id="pointsDisplay">⭐ 1240</div>
+            <div class="spins" id="spinsDisplay">🎡 8 spins</div>
+        </div>
+    </div>
+
+    <div class="title">
+        <h1>ANIMAL CARD COLLECTION</h1>
+    </div>
+
+    <div id="gameArea">
+        <div class="wheel-container">
+            <canvas id="wheelCanvas" width="280" height="280"></canvas>
+            <button class="spin-btn" id="spinButton">SPIN</button>
+        </div>
+        <div class="labels">
+            <span class="label label-legendary">LEGENDARY</span>
+            <span class="label label-epic">EPIC</span>
+            <span class="label label-rare">RARE</span>
+            <span class="label label-common">COMMON</span>
+        </div>
+        <div class="card-grid" id="recentCards"></div>
+    </div>
+
+    <div id="dynamicPanel" class="panel hidden">
+        <h2 id="panelTitle"></h2>
+        <div id="panelContent"></div>
+    </div>
+
+    <div class="nav">
+        <button class="nav-btn active" data-tab="game">GAME</button>
+        <button class="nav-btn" data-tab="collection">COLLECTION</button>
+        <button class="nav-btn" data-tab="shop">SHOP</button>
+        <button class="nav-btn" data-tab="stats">STATS</button>
+        <button class="nav-btn" data-tab="leaderboard">LEADERBOARD</button>
+        <button class="nav-btn" data-tab="me">ME</button>
+    </div>
+</div>
+
+<script>
+(function() {
+    // DATA
+    const ANIMALS = [
+        { name: "ANT", icon: "🐜", rarity: "Common", points: 10 },
+        { name: "MOUSE", icon: "🐭", rarity: "Common", points: 10 },
+        { name: "CAT", icon: "🐱", rarity: "Rare", points: 50 },
+        { name: "DOG", icon: "🐕", rarity: "Rare", points: 55 },
+        { name: "EAGLE", icon: "🦅", rarity: "Epic", points: 200 },
+        { name: "WOLF", icon: "🐺", rarity: "Epic", points: 180 },
+        { name: "DRAGON", icon: "🐉", rarity: "Legendary", points: 1000 }
+    ];
+    const COLORS = ["#FADB67","#F5CD86","#F0BA6C","#F1C282","#F6D596","#EBB45E","#E5A443"];
+
+    let userPoints = 1240;
+    let userSpins = 8;
+    let userCards = {
+        "DRAGON": 1,
+        "EAGLE": 2,
+        "CAT": 3,
+        "ANT": 5
+    };
+    let spinning = false;
+    let wheelAngle = 0;
+    let canvas, ctx;
+    let currentTab = "game";
+
+    function saveData() {
+        try {
+            localStorage.setItem("acc_data", JSON.stringify({
+                points: userPoints,
+                spins: userSpins,
+                cards: userCards
+            }));
+        } catch(e) { console.log(e); }
+    }
+
+    function loadData() {
+        try {
+            let saved = localStorage.getItem("acc_data");
+            if(saved) {
+                let data = JSON.parse(saved);
+                userPoints = data.points || 1240;
+                userSpins = data.spins || 8;
+                userCards = data.cards || {};
+            }
+        } catch(e) { console.log(e); }
+    }
+
+    function updateUI() {
+        let pointsEl = document.getElementById("pointsDisplay");
+        let spinsEl = document.getElementById("spinsDisplay");
+        if(pointsEl) pointsEl.innerHTML = `⭐ ${userPoints}`;
+        if(spinsEl) spinsEl.innerHTML = `🎡 ${userSpins} spins`;
+        updateRecentCards();
+    }
+
+    function updateRecentCards() {
+        let container = document.getElementById("recentCards");
+        if(!container) return;
+        let cardNames = Object.keys(userCards);
+        let recent = cardNames.slice(-4).reverse();
+        let html = "";
+        for(let name of recent) {
+            let card = ANIMALS.find(a => a.name === name);
+            if(card) {
+                let bgColor = card.rarity === "Legendary" ? "#e6b422" : (card.rarity === "Epic" ? "#9b4e9b" : (card.rarity === "Rare" ? "#2a7a8a" : "#6b6b6b"));
+                html += `<div class="card">
+                    <div class="card-icon">${card.icon}</div>
+                    <div class="card-rarity" style="background:${bgColor}">${card.rarity}</div>
+                    <div style="font-size:11px">⭐ ${card.points}</div>
+                </div>`;
+            }
+        }
+        container.innerHTML = html;
+    }
+
+    function getRandomCard() {
+        let rand = Math.random() * 100;
+        if(rand < 60) return ANIMALS.filter(a => a.rarity === "Common")[Math.floor(Math.random() * 2)];
+        if(rand < 85) return ANIMALS.filter(a => a.rarity === "Rare")[Math.floor(Math.random() * 2)];
+        if(rand < 97) return ANIMALS.filter(a => a.rarity === "Epic")[Math.floor(Math.random() * 2)];
+        return ANIMALS.find(a => a.rarity === "Legendary");
+    }
+
+    function addCard(cardName) {
+        userCards[cardName] = (userCards[cardName] || 0) + 1;
+        saveData();
+    }
+
+    function spin() {
+        if(spinning) return;
+        if(userSpins <= 0) {
+            alert("No spins left. Go to SHOP to buy more.");
+            return;
+        }
+        userSpins--;
+        spinning = true;
+        updateUI();
+
+        let speed = 20 + Math.random() * 15;
+        let dec = 0.97;
+
+        function animate() {
+            speed *= dec;
+            wheelAngle += speed * 0.05;
+            drawWheel();
+            if(speed > 0.5) {
+                requestAnimationFrame(animate);
+            } else {
+                let card = getRandomCard();
+                addCard(card.name);
+                userPoints += card.points;
+                saveData();
+                spinning = false;
+                updateUI();
+                alert(`GOT ${card.icon} ${card.name} (${card.rarity})! +${card.points} POINTS!`);
+                if(currentTab === "collection") renderCollection();
+                if(currentTab === "stats") renderStats();
+            }
+        }
+        requestAnimationFrame(animate);
+    }
+
+    function drawWheel() {
+        if(!canvas || !ctx) return;
+        let w = canvas.width, h = canvas.height;
+        let cx = w/2, cy = h/2, r = w * 0.42;
+        ctx.clearRect(0, 0, w, h);
+        let start = wheelAngle;
+        let step = (Math.PI * 2) / ANIMALS.length;
+        for(let i = 0; i < ANIMALS.length; i++) {
+            let end = start + step;
+            ctx.beginPath();
+            ctx.moveTo(cx, cy);
+            ctx.arc(cx, cy, r, start, end);
+            ctx.fillStyle = COLORS[i % COLORS.length];
+            ctx.fill();
+            ctx.strokeStyle = "#a05a2c";
+            ctx.stroke();
+            ctx.fillStyle = "#281e10";
+            ctx.font = "bold 18px Arial";
+            let mid = start + step/2;
+            let x = cx + Math.cos(mid) * r * 0.68;
+            let y = cy + Math.sin(mid) * r * 0.68;
+            ctx.fillText(ANIMALS[i].icon, x-8, y+6);
+            start = end;
+        }
+        ctx.fillStyle = "#E25822";
+        ctx.beginPath();
+        ctx.moveTo(cx-10, cy-r-10);
+        ctx.lineTo(cx, cy-r-28);
+        ctx.lineTo(cx+10, cy-r-10);
+        ctx.fill();
+    }
+
+    function renderCollection() {
+        let html = `<div class="card-grid">`;
+        for(let card of ANIMALS) {
+            let qty = userCards[card.name] || 0;
+            let owned = qty > 0;
+            let bgColor = card.rarity === "Legendary" ? "#e6b422" : (card.rarity === "Epic" ? "#9b4e9b" : (card.rarity === "Rare" ? "#2a7a8a" : "#6b6b6b"));
+            html += `<div class="card" style="opacity:${owned ? 1 : 0.5}">
+                <div class="card-icon">${owned ? card.icon : "?"}</div>
+                <div class="card-rarity" style="background:${bgColor}">${owned ? card.rarity : "LOCKED"}</div>
+                <div style="font-size:11px">⭐ ${owned ? card.points : "?"}</div>
+                <div style="font-size:10px">${owned ? `OWNED: ${qty}` : "NOT OWNED"}</div>
+            </div>`;
+        }
+        html += `</div>`;
+        document.getElementById("panelContent").innerHTML = html;
+    }
+
+    function renderShop() {
+        let html = `
+            <div class="shop-item"><span>10 SPINS</span><span>1 USDC</span><button class="buy-btn" onclick="window.buySpins(10,1)">BUY</button></div>
+            <div class="shop-item"><span>55 SPINS</span><span>5 USDC</span><button class="buy-btn" onclick="window.buySpins(55,5)">BUY</button></div>
+            <div class="shop-item"><span>120 SPINS</span><span>10 USDC</span><button class="buy-btn" onclick="window.buySpins(120,10)">BUY</button></div>
+            <hr style="margin:15px 0; border-color:rgba(255,200,100,0.3);">
+            <p style="font-size:11px; text-align:center;">SEMUA PEMBAYARAN KE WALLET:<br>0xA79b23182e191fDFb5049FFFb5BEE54830980c81</p>
+        `;
+        document.getElementById("panelContent").innerHTML = html;
+    }
+
+    window.buySpins = function(spins, price) {
+        if(confirm(`Buy ${spins} spins for ${price} USDC?`)) {
+            alert(`Send ${price} USDC to: 0xA79b23182e191fDFb5049FFFb5BEE54830980c81`);
+            let demo = prompt("DEMO: Type DEMO to add spins");
+            if(demo === "DEMO") {
+                userSpins += spins;
+                saveData();
+                updateUI();
+                alert(`+${spins} spins added!`);
+                if(currentTab === "stats") renderStats();
+            }
+        }
+    };
+
+    function renderStats() {
+        let totalCards = 0;
+        let uniqueCards = 0;
+        let breakdown = { Common:0, Rare:0, Epic:0, Legendary:0 };
+        for(let card of ANIMALS) {
+            let qty = userCards[card.name] || 0;
+            totalCards += qty;
+            if(qty > 0) {
+                uniqueCards++;
+                breakdown[card.rarity] += qty;
+            }
+        }
+        let progress = Math.round(uniqueCards / ANIMALS.length * 100);
+        let html = `
+            <div class="stat-row"><span>TOTAL POINTS</span><span>${userPoints}</span></div>
+            <div class="stat-row"><span>TOTAL SPINS USED</span><span>${Math.floor(userPoints/10)}</span></div>
+            <div class="stat-row"><span>TOTAL CARDS</span><span>${totalCards}</span></div>
+            <div class="stat-row"><span>UNIQUE CARDS</span><span>${uniqueCards}/${ANIMALS.length}</span></div>
+            <div class="progress-bar"><div class="progress-fill" style="width:${progress}%"></div></div>
+            <div class="stat-row"><span>COMMON</span><span>${breakdown.Common}</span></div>
+            <div class="stat-row"><span>RARE</span><span>${breakdown.Rare}</span></div>
+            <div class="stat-row"><span>EPIC</span><span>${breakdown.Epic}</span></div>
+            <div class="stat-row"><span>LEGENDARY</span><span>${breakdown.Legendary}</span></div>
+        `;
+        document.getElementById("panelContent").innerHTML = html;
+    }
+
+    function renderLeaderboard() {
+        let html = `
+            <div class="stat-row"><span>🥇 1</span><span>FID: 123456</span><span>5,240 PTS</span><span>7/7</span></div>
+            <div class="stat-row"><span>🥈 2</span><span>FID: 234567</span><span>3,120 PTS</span><span>6/7</span></div>
+            <div class="stat-row"><span>🥉 3</span><span>FID: 345678</span><span>2,890 PTS</span><span>6/7</span></div>
+            <div class="stat-row"><span>4</span><span>FID: 456789</span><span>${userPoints} PTS</span><span>${Object.keys(userCards).length}/7</span></div>
+            <hr>
+            <div class="stat-row" style="background:rgba(255,200,100,0.2)"><span>👤 YOUR RANK</span><span>#4</span><span>${userPoints} PTS</span><span>${Object.keys(userCards).length}/7</span></div>
+        `;
+        document.getElementById("panelContent").innerHTML = html;
+    }
+
+    function renderMe() {
+        let totalCards = Object.values(userCards).reduce((a,b)=>a+b,0);
+        let unique = Object.keys(userCards).length;
+        let html = `
+            <div class="stat-row"><span>FID</span><span>456789</span></div>
+            <div class="stat-row"><span>USERNAME</span><span>PLAYER</span></div>
+            <div class="stat-row"><span>TOTAL POINTS</span><span>${userPoints}</span></div>
+            <div class="stat-row"><span>TOTAL SPINS USED</span><span>${Math.floor(userPoints/10)}</span></div>
+            <div class="stat-row"><span>TOTAL CARDS</span><span>${totalCards}</span></div>
+            <div class="stat-row"><span>UNIQUE CARDS</span><span>${unique}/7</span></div>
+            <hr>
+            <div class="stat-row"><span>✅ First Spin</span><span>DONE</span></div>
+            <div class="stat-row"><span>✅ Dragon Hunter</span><span>DONE</span></div>
+            <hr>
+            <button class="buy-btn" style="width:100%; margin-top:10px;" onclick="window.resetGame()">RESET GAME</button>
+        `;
+        document.getElementById("panelContent").innerHTML = html;
+    }
+
+    window.resetGame = function() {
+        if(confirm("RESET all game data?")) {
+            localStorage.removeItem("acc_data");
+            location.reload();
+        }
+    };
+
+    function showTab(tab) {
+        currentTab = tab;
+        let gameArea = document.getElementById("gameArea");
+        let dynamicPanel = document.getElementById("dynamicPanel");
+        let navBtns = document.querySelectorAll(".nav-btn");
+
+        navBtns.forEach(btn => {
+            if(btn.dataset.tab === tab) btn.classList.add("active");
+            else btn.classList.remove("active");
+        });
+
+        if(tab === "game") {
+            gameArea.style.display = "block";
+            dynamicPanel.classList.add("hidden");
+        } else {
+            gameArea.style.display = "none";
+            dynamicPanel.classList.remove("hidden");
+            document.getElementById("panelTitle").innerText = tab.toUpperCase();
+            if(tab === "collection") renderCollection();
+            else if(tab === "shop") renderShop();
+            else if(tab === "stats") renderStats();
+            else if(tab === "leaderboard") renderLeaderboard();
+            else if(tab === "me") renderMe();
+        }
+    }
+
+    document.querySelectorAll(".nav-btn").forEach(btn => {
+        btn.addEventListener("click", function() {
+            showTab(this.dataset.tab);
+        });
+    });
+
+    let spinBtn = document.getElementById("spinButton");
+    if(spinBtn) {
+        spinBtn.addEventListener("click", spin);
+    }
+
+    loadData();
+    canvas = document.getElementById("wheelCanvas");
+    if(canvas) {
+        ctx = canvas.getContext("2d");
+        drawWheel();
+    }
+    updateUI();
+    showTab("game");
+})();
+</script>
+</body>
+</html>
