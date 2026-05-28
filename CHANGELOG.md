@@ -1,22 +1,44 @@
 # Changelog
 
-## [1.0.0] - 2025-05-03
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [1.0.0] - 2024-05-28
 
 ### Added
-- Spin wheel dengan 7 kartu hewan (Ant, Mouse, Cat, Dog, Eagle, Wolf, Dragon)
-- Sistem koleksi kartu dengan kelangkaan Common, Rare, Epic, Legendary
-- Halaman Shop untuk beli spins dengan USDC
-- Halaman Stats untuk lihat progres
-- Halaman Leaderboard peringkat pemain
-- Halaman Profile dengan achievement dan daily reward
-- Daily reward 7 hari
-- Sistem referral
-- Achievement system
+- Initial release
+- Professional website structure
+- Dark mode / Light mode support
+- GitHub stats integration
+- Responsive design
+- Accessibility features
+- SEO optimization
+- Performance optimization
 
-### Wallet
-- Penerimaan pembayaran: 0xA79b23182e191fDFb5049FFFb5BEE54830980c81
+### Changed
+- N/A
 
-### Technical
-- Deploy ke Vercel
-- LocalStorage untuk penyimpanan data
-- Responsive mobile first
+### Deprecated
+- N/A
+
+### Removed
+- N/A
+
+### Fixed
+- N/A
+
+### Security
+- Security headers configured
+- Input validation implemented
+- HTTPS recommended
+
+---
+
+## Unreleased
+
+### Planned
+- Additional features coming soon
+- Performance improvements
+- More customization options
