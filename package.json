@@ -16,14 +16,19 @@
     "professional",
     "game"
   ],
-  "author": "xenon231tech",
+  "author": {
+    "name": "Xenon",
+    "email": "xannrlcs@gmail.com",
+    "url": "https://xenon.dev"
+  },
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/xenon231tech/animal-card-game-by-xenon_d62.git"
   },
   "bugs": {
-    "url": "https://github.com/xenon231tech/animal-card-game-by-xenon_d62/issues"
+    "url": "https://github.com/xenon231tech/animal-card-game-by-xenon_d62/issues",
+    "email": "xannrlcs@gmail.com"
   },
-  "homepage": "https://github.com/xenon231tech/animal-card-game-by-xenon_d62#readme"
+  "homepage": "https://xenon.dev"
 }

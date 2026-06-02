@@ -1,3 +1,9 @@
+# Animal Card Game By Xenon_D62
+
+**Author:** Xenon  
+**Email:** xannrlcs@gmail.com  
+**Website:** https://xenon.dev
+
 # 🎡 Animal Card Collection
 
 Spin wheel game untuk mengoleksi kartu hewan dengan sistem kelangkaan
@@ -17,7 +23,7 @@ Spin wheel game untuk mengoleksi kartu hewan dengan sistem kelangkaan
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/xenon231tech/animal-card-game-by-xenon_d62.git
+   git clone https://xenon.dev/animal-card-game-by-xenon_d62.git
    cd animal-card-game-by-xenon_d62
    ```
 
@@ -81,7 +87,7 @@ The website automatically fetches and displays:
 ### GitHub Pages
 1. Go to repository Settings → Pages
 2. Select "main" branch as source
-3. Website will be live at: `https://xenon231tech.github.io/animal-card-game-by-xenon_d62`
+3. Website will be live at: `https://xenon.dev/animal-card-game-by-xenon_d62`
 
 ### Vercel
 1. Connect repository to Vercel
@@ -119,7 +125,7 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## 📧 Contact
 
-- GitHub: [@xenon231tech](https://github.com/xenon231tech)
+- GitHub: [@xenon231tech](https://xenon.dev)
 - Twitter: [@xenon_d62](https://twitter.com/xenon_d62)
 - Email: contact@xenon.dev
 
